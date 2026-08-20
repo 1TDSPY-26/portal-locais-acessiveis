@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Ao final, você terá o repositório da sua turma no computador, a branch correta selecionada e o projeto executando.
+- Ao final, você terá o repositório da sua turma no computador, a branch correta selecionada e o projeto executando.
 
 ## Antes de começar
 
