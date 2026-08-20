@@ -1,3 +1,7 @@
+## Turma responsável
+
+Organização GitHub: `1TDSPY-26`
+
 # Pacote GitHub — CP Continuado
 
 Este pacote contém modelos padronizados para o projeto continuado do Portal de Locais e Serviços Acessíveis.
@@ -95,3 +99,6 @@ vercel.json
 - dado médico ou pessoal sensível.
 
 O controle de notas deverá permanecer em ambiente privado do professor.
+
+
+
