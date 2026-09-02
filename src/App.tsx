@@ -1,8 +1,7 @@
-
+import { Loading } from "./components/Loading"
 
 export default function App() {
   return (
-    <div>App</div>
+      <Loading />
   )
 }
-
