@@ -1,16 +1,13 @@
 import Cabecalho from "../components/Header/Header";
 import Rodape from "../components/Footer/Footer";
+import { Outlet } from "react-router-dom";
 
-type MainLayoutProps = {
-  children: React.ReactNode;
-};
-
-export default function MainLayout({ children }: MainLayoutProps) {
+export default function MainLayout() {
   return (
     <div>
       <Cabecalho />
       <main>
-        {children}
+        <Outlet />
       </main>
       <Rodape />
     </div>
