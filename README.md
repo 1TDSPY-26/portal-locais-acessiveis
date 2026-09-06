@@ -1,3 +1,7 @@
+## Turma responsável
+
+Organização GitHub: `1TDSPY-26`
+
 # Pacote GitHub — CP Continuado
 
 ## Pacote inicial do projeto 
@@ -97,3 +101,6 @@ vercel.json
 - dado médico ou pessoal sensível.
 
 O controle de notas deverá permanecer em ambiente privado do professor.
+
+
+
