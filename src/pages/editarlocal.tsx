@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { obterLocalPorId, atualizarLocal } from '../services/locais'
-import { Local } from '../types/Local'
+import { atualizarLocal, obterLocalPorId } from '../services/locais'
 
 export default function EditarLocal() {
   const { id } = useParams<{ id: string }>()
@@ -12,39 +11,77 @@ export default function EditarLocal() {
   const [erro, setErro] = useState('')
   const [sucesso, setSucesso] = useState(false)
 
-  useEffect(() => {
-    async function carregarLocal() {
-      if (!id) return
-      try {
-        setCarregando(true)
-        const dados = await obterLocalPorId(Number(id))
-        if (dados && dados.nome) {
-          setNome(dados.nome)
-        }
-      } catch (err) {
-        setErro('Erro ao carregar os dados do local.')
-      } finally {
-        setCarregando(false)
-      }
-    }
-    carregarLocal()
-  }, [id])
+ cola isso no seu useEffect:
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (!id) return
-    setErro('')
-    setSucesso(false)
+useEffect(() => {
+  async function carregarLocal() {
+    if (!id) {
+      setErro('ID do local não informado.')
+      setCarregando(false)
+      return
+    }
 
     try {
-      await atualizarLocal(Number(id), { nome })
-      setSucesso(true)
-      setTimeout(() => {
-        navigate('/locais')
-      }, 1500)
-    } catch (err) {
-      setErro('Erro ao atualizar o local. Verifique os dados e tente novamente.')
+      setCarregando(true)
+      setErro('')
+
+      const { data, error } = await obterLocalPorId(Number(id))
+
+      if (error) {
+        setErro(error.message)
+        return
+      }
+
+      if (!data) {
+        setErro('Local não encontrado.')
+        return
+      }
+
+      setNome(data.nome)
+    } catch {
+      setErro('Erro inesperado ao carregar os dados do local.')
+    } finally {
+      setCarregando(false)
     }
+  }
+
+  carregarLocal()
+}, [id])
+
+useEffect(() => {
+  async function carregarLocal() {
+    if (!id) {
+      setErro('ID do local não informado.')
+      setCarregando(false)
+      return
+    }
+
+    try {
+      setCarregando(true)
+      setErro('')
+
+      const { data, error } = await obterLocalPorId(Number(id))
+
+      if (error) {
+        setErro(error.message)
+        return
+      }
+
+      if (!data) {
+        setErro('Local não encontrado.')
+        return
+      }
+
+      setNome(data.nome)
+    } catch {
+      setErro('Erro inesperado ao carregar os dados do local.')
+    } finally {
+      setCarregando(false)
+    }
+  }
+
+  carregarLocal()
+}, [id])
   }
 
   if (carregando) return <p>Carregando dados do local...</p>
