@@ -1,5 +1,5 @@
-import Cadastro from './pages/Cadastro/Cadastro';
+import AppRoutes from "./routes/AppRoutes";
 
 export default function App() {
-  return <Cadastro />;
-}
+  return <AppRoutes />;
+};
