@@ -46,40 +46,37 @@ useEffect(() => {
   carregarLocal()
 }, [id])
 
-useEffect(() => {
-  async function carregarLocal() {
+async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+
     if (!id) {
       setErro('ID do local não informado.')
-      setCarregando(false)
       return
     }
 
-    try {
-      setCarregando(true)
-      setErro('')
+    setErro('')
+    setSucesso(false)
 
-      const { data, error } = await obterLocalPorId(Number(id))
+    try {
+      const { error } = await atualizarLocal(Number(id), { nome })
 
       if (error) {
         setErro(error.message)
         return
       }
 
-      if (!data) {
-        setErro('Local não encontrado.')
-        return
-      }
+      setSucesso(true)
 
-      setNome(data.nome)
+      setTimeout(() => {
+        navigate('/locais')
+      }, 1500)
     } catch {
-      setErro('Erro inesperado ao carregar os dados do local.')
-    } finally {
-      setCarregando(false)
+      setErro('Erro inesperado ao atualizar o local.')
     }
   }
 
-  carregarLocal()
-}, [id])
+  if (carregando) {
+    return <p>Carregando dados do local...</p>
   }
 
   if (carregando) return <p>Carregando dados do local...</p>
