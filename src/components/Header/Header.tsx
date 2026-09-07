@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 export default function Cabecalho() {
   return (
@@ -6,10 +6,26 @@ export default function Cabecalho() {
       <h1>Cabecalho</h1>
       <nav>
         <ul>
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/locais">Locais</Link></li>
-          <li><Link to="/cadastro">Cadastro</Link></li>
-          <li><Link to="/sobre">Sobre</Link></li>
+          <li>
+            <NavLink to="/" end className={({ isActive }) => (isActive ? "ativo" : "")}>
+              Home
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/locais" className={({ isActive }) => (isActive ? "ativo" : "")}>
+              Locais
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/cadastro" className={({ isActive }) => (isActive ? "ativo" : "")}>
+              Cadastro
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/sobre" className={({ isActive }) => (isActive ? "ativo" : "")}>
+              Sobre
+            </NavLink>
+          </li>
         </ul>
       </nav>
     </header>
