@@ -1,10 +1,5 @@
-import {Outlet} from "react-router";
-import MainLayout from "./layouts/MainLayout";
+import AppRoutes from "./routes/AppRoutes";
 
 export default function App() {
-  return (
-    <MainLayout>
-      <Outlet />
-    </MainLayout>
-  );
-}
+  return <AppRoutes />;
+};
