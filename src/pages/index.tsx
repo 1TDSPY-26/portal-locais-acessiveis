@@ -1,0 +1,1 @@
+export { default as EditarLocal } from './EditarLocal'
