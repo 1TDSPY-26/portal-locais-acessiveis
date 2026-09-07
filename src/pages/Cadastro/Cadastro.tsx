@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { criarLocal } from '../../services/locais';
 
 function Cadastro() {
@@ -10,6 +10,13 @@ function Cadastro() {
   const [erros, setErros] = useState<string[]>([]);
   const [enviando, setEnviando] = useState(false);
   const [mensagem, setMensagem] = useState('');
+  const mensagemRef = useRef<HTMLParagraphElement>(null);
+
+  useEffect(() => {
+    if (mensagem) {
+      mensagemRef.current?.focus();
+    }
+  }, [mensagem]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -56,10 +63,17 @@ function Cadastro() {
     setEnviando(false);
 
     if (resultado.error) {
-      setMensagem(resultado.error.message);
+      setMensagem(
+        `${resultado.error.message} (status: ${resultado.error.status ?? 'desconhecido'})`
+      );
       return;
     }
 
+    setNome('');
+    setEndereco('');
+    setCategoria('');
+    setDescricao('');
+    setAcessibilidade([]);
     setMensagem('Local cadastrado com sucesso!');
   }
 
@@ -67,7 +81,7 @@ function Cadastro() {
     <main>
       <h1>Cadastrar novo local</h1>
       {mensagem && (
-        <p role="status">
+        <p role="status" tabIndex={-1} ref={mensagemRef}>
           {mensagem}
         </p>
       )}

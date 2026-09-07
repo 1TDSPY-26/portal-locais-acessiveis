@@ -1,0 +1,36 @@
+{
+  "locais": [
+    {
+      "nome": "Shopping Teste",
+      "endereco": "Av. Paulista, 1000",
+      "categoria": "Shopping",
+      "descricao": "aaaa",
+      "tiposAcessibilidade": [
+        "Deficiência visual"
+      ],
+      "id": "3qPrtfAtSWg"
+    },
+    {
+      "nome": "Shopping Teste",
+      "endereco": "Av. Paulista, 1000",
+      "categoria": "Shopping",
+      "descricao": "aasds",
+      "tiposAcessibilidade": [
+        "Deficiência visual"
+      ],
+      "id": "vvEv0eqIJnI"
+    },
+    {
+      "nome": "Shopping Teste",
+      "endereco": "Av. Paulista, 1000",
+      "categoria": "Shopping",
+      "descricao": "Shopping com acessibilidade ",
+      "tiposAcessibilidade": [
+        "Deficiência visual",
+        "Cadeira de rodas"
+      ],
+      "id": "4mgFClxhgqY"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
