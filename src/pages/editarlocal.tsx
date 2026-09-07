@@ -10,9 +10,7 @@ export default function EditarLocal() {
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState('')
   const [sucesso, setSucesso] = useState(false)
-
- cola isso no seu useEffect:
-
+  
 useEffect(() => {
   async function carregarLocal() {
     if (!id) {
