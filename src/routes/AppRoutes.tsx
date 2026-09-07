@@ -1,6 +1,6 @@
 import { Route, Routes } from 'react-router-dom'
 import MainLayout from '../layouts/MainLayout'
-import EditLocation from '../pages/EditLocation'
+import EditLocation from '../pages/EditLocation/EditLocation'
 import Home from '../pages/Home/Home'
 
 export default function AppRoutes() {
