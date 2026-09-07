@@ -1,61 +1,63 @@
-import { useEffect, useState } from 'react'; // Correção: importação dos hooks do React
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { buscarLocalPorId } from '@/services/locaisService'; 
-import { DetalheLocalComponente } from '@/components/DetalheLocal'; 
-import { Loading } from '@/components/Loading'; 
-import { ErrorMessage } from '@/components/ErrorMessage'; 
-import { Local } from '@/types/local';
 
-export const DetalheLocalPage = () => {
-  const { id } = useParams<{ id: string }>();
+// Componentes e Serviços da equipe
+import ErrorMessage from '../components/Error/ErrorMessage';
+import { Loading } from '../components/Loading/Loading';
+import { LocalDetail } from '../components/LocalDetail/LocalDetail';
+import { obterLocalPorId } from '../services/locais';
+import type { Local } from '../types/Local';
+
+export default function DetalheLocalPage() {
+  const { id } = useParams();
   const navigate = useNavigate();
 
   const [local, setLocal] = useState<Local | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState<string | null>(null);
+  const [tentativa, setTentativa] = useState(0);
 
   useEffect(() => {
-    const carregarLocal = async () => {
-      if (!id) {
-        setError('Identificador do local inválido.');
-        setLoading(false);
-        return;
-      }
+    async function buscarDados() {
+      if (!id) return;
 
       try {
         setLoading(true);
-        setError(null);
-        const data = await buscarLocalPorId(id);
+        setErro(null);
 
-        if (!data) {
-          setError('Local não encontrado.');
+        const resultado = await obterLocalPorId(Number(id));
+
+        if (resultado && resultado.data) {
+          setLocal(resultado.data);
         } else {
-          setLocal(data);
+          setErro('Local não encontrado.');
         }
       } catch {
-      
-        setError('O local solicitado não foi encontrado.');
+        setErro('Erro ao carregar as informações do local.');
       } finally {
         setLoading(false);
       }
-    };
+    }
 
-    carregarLocal();
-  }, [id]);
+    buscarDados();
+  }, [id, tentativa]);
 
   if (loading) {
-    return <Loading message="Carregando detalhes do local..." />;
+    return <Loading />;
   }
 
-  if (error || !local) {
+  if (erro || !local) {
     return (
       <main tabIndex={-1} aria-live="polite" className="container mx-auto p-4">
-        <ErrorMessage message={error || 'Local inexistente.'} />
+        <ErrorMessage 
+          message={erro || 'Local não encontrado.'} 
+          onRetry={() => setTentativa((prev) => prev + 1)} 
+        />
         <button
           onClick={() => navigate('/locais')}
-          className="mt-4 px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark focus:outline-none focus:ring-2"
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2"
         >
-          Voltar para a lista de locais
+          Voltar para a lista
         </button>
       </main>
     );
@@ -63,7 +65,7 @@ export const DetalheLocalPage = () => {
 
   return (
     <main tabIndex={-1} className="container mx-auto p-4">
-      <DetalheLocalComponente local={local} />
+      <LocalDetail local={local} />
     </main>
   );
-};
+}
