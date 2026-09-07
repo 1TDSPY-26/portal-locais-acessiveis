@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
-import NotFound from "../pages/NotFound";
+import NotFound from "../pages/NotFound/NotFound";
 
 export default function AppRoutes() {
   return (
