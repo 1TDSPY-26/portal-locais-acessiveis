@@ -1,11 +1,6 @@
-interface Local {
-    id: number;
-    nome: string;
-    categoria: string;
-    resumo: string;
-}
+import type { Local } from "../../types/Local";
 
-interface LocalCard {
+type LocalCard = {
     local: Local;
 }
 
@@ -14,7 +9,7 @@ function LocalCard({local}: LocalCard) {
         <div>
             <h2>{local.nome}</h2>
             <p>{local.categoria}</p>
-            <p>{local.resumo}</p>
+            <p>{local.descricao}</p>
             <a href={`/locais/${local.id}`}>ver detalhes</a>
         </div>
     );
