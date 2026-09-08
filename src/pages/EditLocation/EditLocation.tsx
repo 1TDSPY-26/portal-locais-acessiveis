@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import {
   atualizarLocal as updateLocation,
   obterLocalPorId as getLocationById,
-} from '../services/locais'
+} from '../../services/locais'
 
 export default function EditLocation() {
   const { id } = useParams<{ id: string }>()
