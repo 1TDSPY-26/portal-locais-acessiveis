@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
 import MainLayout from '../layouts/MainLayout'
-import EditLocation from '../pages/EditLocation'
+import EditLocation from '../pages/EditLocation/EditLocation'
+import NotFound from '../pages/NotFound/NotFound'
 
 export default function AppRoutes() {
   return (
@@ -21,6 +22,7 @@ export default function AppRoutes() {
 
         <Route path="/cadastrar" element={<h1>Cadastro</h1>} />
         <Route path="/sobre" element={<h1>Sobre</h1>} />
+        <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
   )
