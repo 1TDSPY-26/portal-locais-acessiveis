@@ -3,13 +3,14 @@ import MainLayout from "../layouts/MainLayout";
 import EditLocation from "../pages/EditLocation/EditLocation";
 import NotFound from "../pages/NotFound/NotFound";
 import ErrorBoundary from "../components/Error/ErrorBoundary";
+import Home from "../pages/Home/Home";
 
 export default function AppRoutes() {
   return (
     <ErrorBoundary>
       <Routes>
         <Route element={<MainLayout />}>
-          <Route path="/" element={<h1>Home</h1>} />
+          <Route path="/" element={<h1><Home /></h1>} />
           <Route path="/locais" element={<h1>Locais</h1>} />
 
           <Route path="/locais/editar/:id" element={<EditLocation />} />
