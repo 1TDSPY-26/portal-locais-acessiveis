@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
 import MainLayout from '../layouts/MainLayout'
 import EditLocation from '../pages/EditLocation'
+import DetalheLocalPage from '../pages/DetalheLocal/DetalheLocal'
 
 export default function AppRoutes() {
   return (
@@ -13,6 +14,7 @@ export default function AppRoutes() {
           path="/locais/editar/:id"
           element={<EditLocation />}
         />
+        <Route path="/locais/:id" element={<DetalheLocalPage />} />
 
         <Route
           path="/locais/:id"
