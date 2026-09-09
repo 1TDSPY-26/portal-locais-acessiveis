@@ -1,1 +1,12 @@
 @import "tailwindcss";
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  body {
+    background-color: #ffffff;
+    color: #111827;
+  }
+}
