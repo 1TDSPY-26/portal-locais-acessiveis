@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom'
+import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 
 export default function Home() {
+  useDocumentTitle()
+
   return (
     <div className="mx-auto px-4 py-10 sm:px-6 sm:py-16">
       <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">

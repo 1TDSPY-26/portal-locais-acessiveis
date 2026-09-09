@@ -5,8 +5,11 @@ import LocalCard from '../../components/LocalCard/LocalCard'
 import { Loading } from '../../components/Loading/Loading'
 import ErrorMessage from '../../components/Error/ErrorMessage'
 import { EmptyState } from '../../components/EmptyState/EmptyState'
+import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 
 export default function Locais() {
+  useDocumentTitle('Locais')
+
   const [locais, setLocais] = useState<Local[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
