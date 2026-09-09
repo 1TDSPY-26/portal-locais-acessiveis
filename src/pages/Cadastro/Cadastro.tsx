@@ -78,7 +78,7 @@ function Cadastro() {
   }
 
   return (
-    <main>
+    <div>
       <h1>Cadastrar novo local</h1>
       {mensagem && (
         <p role="status" tabIndex={-1} ref={mensagemRef}>
@@ -222,7 +222,7 @@ function Cadastro() {
           {enviando ? 'Cadastrando...' : 'Cadastrar local'}
         </button>
       </form>
-    </main>
+    </div>
   );
 }
 
