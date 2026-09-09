@@ -1,4 +1,4 @@
-name: Verificação de qualidade
+name: CI Pipeline
 
 on:
   pull_request:
@@ -18,44 +18,29 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  quality:
+  lint-build-test:
     name: lint-build-test
     runs-on: ubuntu-latest
 
     steps:
-      - name: Baixar o código
-        uses: actions/checkout@v7
+      - name: Checkout do código
+        uses: actions/checkout@v4
 
-      - name: Verificar se o projeto Node foi inicializado
-        id: project
-        shell: bash
-        run: |
-          if [[ -f package.json && -f package-lock.json ]]; then
-            echo "ready=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "Projeto Vite ainda não inicializado. As verificações Node serão ativadas após a criação do package-lock.json."
-          fi
-
-      - name: Configurar Node.js
-        if: steps.project.outputs.ready == 'true'
-        uses: actions/setup-node@v6
+      - name: Configurar Node.js com cache
+        uses: actions/setup-node@v4
         with:
-          node-version: "22"
-          cache: npm
+          node-version: '20'
+          cache: 'npm'
 
-      - name: Instalar dependências
-        if: steps.project.outputs.ready == 'true'
+      - name: Instalação limpa de dependências
         run: npm ci
 
-      - name: Verificar lint
-        if: steps.project.outputs.ready == 'true'
-        run: npm run lint --if-present
+      - name: Validação de lint
+        run: npm run lint
 
-      - name: Gerar build
-        if: steps.project.outputs.ready == 'true'
+      - name: Build da aplicação
         run: npm run build
 
-      - name: Executar testes disponíveis
-        if: steps.project.outputs.ready == 'true'
+      - name: Execução de testes
+        # --if-present evita que o CI quebre enquanto a Issue #11 (testes automatizados) não existir
         run: npm run test --if-present
