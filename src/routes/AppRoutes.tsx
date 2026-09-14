@@ -1,28 +1,29 @@
-import { Route, Routes } from 'react-router-dom'
-import MainLayout from '../layouts/MainLayout'
-import EditLocation from '../pages/EditLocation'
-import Sobre from '../pages/Sobre/Sobre'
+import { Route, Routes } from "react-router-dom";
+import MainLayout from "../layouts/MainLayout";
+import EditLocation from "../pages/EditLocation/EditLocation";
+import NotFound from "../pages/NotFound/NotFound";
+import ErrorBoundary from "../components/Error/ErrorBoundary";
+import Home from "../pages/Home/Home";
+import Locais from "../pages/Locais/Locais";
+import Sobre from "../pages/Sobre/Sobre";
 
 export default function AppRoutes() {
   return (
-    <Routes>
-      <Route element={<MainLayout />}>
-        <Route path="/" element={<h1>Home</h1>} />
-        <Route path="/locais" element={<h1>Locais</h1>} />
+    <ErrorBoundary>
+      <Routes>
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<h1><Home /></h1>} />
+          <Route path="/locais" element={<Locais />} />
 
-        <Route
-          path="/locais/editar/:id"
-          element={<EditLocation />}
-        />
+          <Route path="/locais/editar/:id" element={<EditLocation />} />
 
-        <Route
-          path="/locais/:id"
-          element={<h1>Detalhe do Local</h1>}
-        />
+          <Route path="/locais/:id" element={<h1>Detalhe do Local</h1>} />
 
-        <Route path="/cadastrar" element={<h1>Cadastro</h1>} />
-        <Route path="/sobre" element={<Sobre />} />
-      </Route>
-    </Routes>
-  )
+          <Route path="/cadastrar" element={<h1>Cadastro</h1>} />
+          <Route path="/sobre" element={<Sobre />} />
+          <Route path="*" element={<NotFound />} />
+        </Route>
+      </Routes>
+    </ErrorBoundary>
+  );
 }
