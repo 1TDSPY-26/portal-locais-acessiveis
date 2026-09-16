@@ -1,16 +1,19 @@
 import type { Local } from "../../types/Local";
+import { Link } from "react-router-dom";
 
-type LocalCard = {
+type LocalCardProps = {
     local: Local;
 }
 
-function LocalCard({local}: LocalCard) {
+function LocalCard({ local }: LocalCardProps) {
     return (
         <div>
             <h2>{local.nome}</h2>
             <p>{local.categoria}</p>
             <p>{local.descricao}</p>
-            <a href={`/locais/${local.id}`}>ver detalhes</a>
+            <Link to={`/locais/${local.id}`} aria-label={`Ver detalhes de ${local.nome}`}>
+                ver detalhes
+            </Link>
         </div>
     );
 }
