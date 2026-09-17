@@ -37,7 +37,8 @@ export async function obterLocalPorId(id: number) {
   return apiRequest<Local>(`/locais/${id}`)
 }
 
-export async function criarLocal(local: Omit<Local, 'id'>) {
+export async function criarLocal(
+  local: Omit<Local, 'id' | 'notaAcessibilidade'>) {
   return apiRequest<Local>('/locais', {
     method: 'POST',
     body: JSON.stringify(local),
