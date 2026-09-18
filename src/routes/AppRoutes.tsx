@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import EditLocation from "../pages/EditLocation/EditLocation";
 import NotFound from "../pages/NotFound/NotFound";
@@ -13,15 +13,17 @@ export default function AppRoutes() {
     <ErrorBoundary>
       <Routes>
         <Route element={<MainLayout />}>
-          <Route path="/" element={<h1><Home /></h1>} />
+          <Route path="/" element={<Home />} />
           <Route path="/locais" element={<PaginaLocais />} />
 
           <Route path="/locais/editar/:id" element={<EditLocation />} />
 
           <Route path="/locais/:id" element={<h1>Detalhe do Local</h1>} />
 
-          <Route path="/cadastrar" element={<h1>Cadastro</h1>} />
+          <Route path="/cadastro" element={<h1>Cadastro</h1>} />
+          <Route path="/cadastrar" element={<Navigate to="/cadastro" replace />} />
           <Route path="/sobre" element={<Sobre />} />
+          <Route path="/acessibilidade" element={<h1>Acessibilidade</h1>} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
