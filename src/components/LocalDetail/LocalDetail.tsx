@@ -15,12 +15,17 @@ export default function LocalDetail({ local }: Props) {
 
       <div>
         <strong>Acessibilidade:</strong>
-        <ul>
-          {local.tiposAcessibilidade.map((tipo) => (
-            <li key={tipo}>{tipo}</li>
-          ))}
-        </ul>
+        {local.tiposAcessibilidade.length > 0 ? (
+          <ul>
+            {local.tiposAcessibilidade.map((tipo) => (
+              <li key={tipo}>{tipo}</li>
+            ))}
+          </ul>
+        ) : (
+          <p>Nenhuma informação de acessibilidade cadastrada.</p>
+        )}
       </div>
+      <div style={{ height: "1.5em" }}></div>
     </section>
   );
 }
