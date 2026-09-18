@@ -1,6 +1,6 @@
 # Plano de QA — consulta e cadastro de locais
 
-Issue de QA: #92. Estado: **planejado, execução pendente**. A URL em
+Issue de QA: #92. Estado: **execução exploratória parcial; decisão final pendente**. A URL em
 `.env.example` é ilustrativa; cenários de rede exigem uma API de teste
 confirmada ou uma fixture aprovada. Nenhuma aprovação está implícita.
 
@@ -26,22 +26,26 @@ filtros para permitir teste antes dos merges autorizados.
 
 1. Registrar PR, branch, base e `git rev-parse HEAD` antes de cada cenário.
 2. Executar `npm ci`, `npm run lint`, `npm run build` e `npm run test -- --run`.
-3. Registrar URL e contrato da API de teste; não usar dados pessoais.
+3. Registrar URL e contrato da API de teste; não usar dados pessoais. A fixture
+   local reproduzível está em [`fixtures/mock-api.mjs`](fixtures/mock-api.mjs):
+   executar `node docs/qa/fixtures/mock-api.mjs success`, substituindo
+   `success` por `empty` ou `error` nos outros cenários, e iniciar
+   o Vite com `VITE_API_URL=http://127.0.0.1:4000`.
 4. Abrir a aplicação em desktop e 320 px; registrar navegador e sistema.
 
 ## Cenários de consulta
 
 | ID | Ação | Resultado esperado | Encontrado |
 | --- | --- | --- | --- |
-| L01 | API devolve vários locais. | Cards, endereços e contagem corretos. | Pendente |
-| L02 | API devolve lista vazia. | Mensagem de lista vazia, sem estado de erro. | Pendente |
-| L03 | API falha. | Mensagem de erro e tentativa de novo carregamento. | Pendente |
+| L01 | API devolve vários locais. | Cards, endereços e contagem corretos. | Exploratório: 3 cards e contagem 3. |
+| L02 | API devolve lista vazia. | Mensagem de lista vazia, sem estado de erro. | Exploratório: mensagem “Nenhum local cadastrado até o momento.” |
+| L03 | API falha. | Mensagem de erro e tentativa de novo carregamento. | Exploratório: “Erro na requisição” e botão “Tentar novamente”. |
 | L04 | Local possui campo opcional ausente, se contrato permitir. | Card e detalhe permanecem legíveis. | Pendente |
 | L05 | Abrir Ver detalhes de um card. | ID da rota corresponde ao card. | Pendente |
-| P01 | Buscar nome completo, parcial e em maiúsculas. | Resultados correspondentes sem diferenciar caixa. | Pendente |
-| P02 | Selecionar categoria e recurso juntos. | Apenas locais que atendem aos critérios aparecem. | Pendente |
-| P03 | Buscar texto inexistente. | Zero resultados é distinto de falha da API. | Pendente |
-| P04 | Limpar pesquisa e filtros. | Lista completa e contagem restauradas. | Pendente |
+| P01 | Buscar nome completo, parcial e em maiúsculas. | Resultados correspondentes sem diferenciar caixa. | Exploratório: “biblioteca” e “BIBLIOTECA” retornaram 1; nome completo e parcial restantes pendentes. |
+| P02 | Selecionar categoria e recurso juntos. | Apenas locais que atendem aos critérios aparecem. | Exploratório: Cultura + Rampa retornou 1. |
+| P03 | Buscar texto inexistente. | Zero resultados é distinto de falha da API. | Exploratório: BIBLIOTECA + Lazer retornou 0 com mensagem específica; texto inexistente isolado pendente. |
+| P04 | Limpar pesquisa e filtros. | Lista completa e contagem restauradas. | Exploratório: voltou de 0 para 3. |
 
 ## Cenários de detalhe e cadastro
 
@@ -57,8 +61,10 @@ filtros para permitir teste antes dos merges autorizados.
 
 ## Registro final
 
-- PR e commit efetivamente testados: a preencher.
-- Navegador / sistema / resolução: a preencher.
-- Fixture ou API usada: a preencher.
+- Execução exploratória: PR #103, commit `0f64075`, em 17/09/2026.
+- Navegador / sistema: navegador integrado do Codex no Windows 11; resolução
+  não registrada, portanto a condição de 320 px continua pendente.
+- Fixture usada: `docs/qa/fixtures/mock-api.mjs` com modos `success`, `empty`
+  e `error`; não houve conexão com API real.
 - Evidências e bugs reproduzíveis: a preencher.
 - Decisão: **pendente** (`Aprovado`, `Aprovado com ressalva`, `Reprovado` ou `Bloqueado`).
