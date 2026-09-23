@@ -14,6 +14,14 @@ export async function apiRequest<T>(
   endpoint: string,
   options?: RequestInit
 ): Promise<ApiResult<T>> {
+  if (!API_URL || API_URL === 'https://api.exemplo.com') {
+    return {
+      error: {
+        message: 'Serviço de locais indisponível no momento. Tente novamente mais tarde.',
+      },
+    }
+  }
+
   const controller = new AbortController()
 
   const timeout = setTimeout(() => {
