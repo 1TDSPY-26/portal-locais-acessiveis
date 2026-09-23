@@ -5,7 +5,7 @@ import NotFound from "../pages/NotFound/NotFound";
 import ErrorBoundary from "../components/Error/ErrorBoundary";
 import Home from "../pages/Home/Home";
 import Cadastro from "../pages/Cadastro/Cadastro";
-import PaginaLocais from "../pages/Locations/PaginaLocais";
+// import PaginaLocais from "../pages/Locations/PaginaLocais";
 // import Locais from "../pages/Locais/Locais";
 import Locais from "../pages/Locais/Locais";
 import Sobre from "../pages/Sobre/Sobre";
