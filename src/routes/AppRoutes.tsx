@@ -1,25 +1,30 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import EditLocation from "../pages/EditLocation/EditLocation";
 import NotFound from "../pages/NotFound/NotFound";
 import ErrorBoundary from "../components/Error/ErrorBoundary";
 import Home from "../pages/Home/Home";
 import DetalheLocalPage from "../pages/DetalheLocal/DetalheLocal";
+import Locais from "../pages/Locais/Locais";
+import Sobre from "../pages/Sobre/Sobre";
+import Acessibilidade from "../pages/Acessibilidade/Acessibilidade";
 
 export default function AppRoutes() {
   return (
     <ErrorBoundary>
       <Routes>
         <Route element={<MainLayout />}>
-          <Route path="/" element={<h1><Home /></h1>} />
-          <Route path="/locais" element={<h1>Locais</h1>} />
+          <Route path="/" element={<Home />} />
+          <Route path="/locais" element={<Locais />} />
 
           <Route path="/locais/editar/:id" element={<EditLocation />} />
 
           <Route path="/locais/:id" element={<DetalheLocalPage />} />
 
-          <Route path="/cadastrar" element={<h1>Cadastro</h1>} />
-          <Route path="/sobre" element={<h1>Sobre</h1>} />
+          <Route path="/cadastro" element={<h1>Cadastro</h1>} />
+          <Route path="/cadastrar" element={<Navigate to="/cadastro" replace />} />
+          <Route path="/sobre" element={<Sobre />} />
+          <Route path="/acessibilidade" element={<Acessibilidade />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
