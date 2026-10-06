@@ -23,7 +23,10 @@ export default function Locais() {
   const [busca, setBusca] = useState('')
   const [categoria, setCategoria] = useState('')
   const [recursos, setRecursos] = useState<string[]>([])
+
   const [localParaExcluir, setLocalParaExcluir] = useState<Local | null>(null)
+  const [isExcluindo, setIsExcluindo] = useState(false)
+  const [erroExclusao, setErroExclusao] = useState('')
 
   const categorias = useMemo(
     () => [...new Set(locais.map((local) => local.categoria))].sort(),
@@ -90,18 +93,46 @@ export default function Locais() {
     setRetryKey((key) => key + 1)
   }
 
+  const abrirConfirmacaoExclusao = (local: Local) => {
+    setErroExclusao('')
+    setLocalParaExcluir(local)
+  }
+
+  const cancelarExclusao = () => {
+    if (isExcluindo) return
+
+    setErroExclusao('')
+    setLocalParaExcluir(null)
+  }
+
   const confirmarExclusao = async () => {
-    if (!localParaExcluir) return
+    if (!localParaExcluir || isExcluindo) return
 
-    const { error } = await removerLocal(localParaExcluir.id)
+    setIsExcluindo(true)
+    setErroExclusao('')
 
-    if (!error) {
+    try {
+      const { error } = await removerLocal(localParaExcluir.id)
+
+      if (error) {
+        setErroExclusao(
+          error.message || 'Não foi possível excluir o local. Tente novamente.',
+        )
+        return
+      }
+
       setLocais((atuais) =>
         atuais.filter((local) => local.id !== localParaExcluir.id),
       )
-    }
 
-    setLocalParaExcluir(null)
+      setLocalParaExcluir(null)
+    } catch {
+      setErroExclusao(
+        'Erro inesperado ao excluir o local. Tente novamente.',
+      )
+    } finally {
+      setIsExcluindo(false)
+    }
   }
 
   return (
@@ -162,7 +193,7 @@ export default function Locais() {
               <LocalCard
                 key={local.id}
                 local={local}
-                onExcluir={setLocalParaExcluir}
+                onExcluir={abrirConfirmacaoExclusao}
               />
             ))}
           </div>
@@ -174,6 +205,7 @@ export default function Locais() {
           role="dialog"
           aria-modal="true"
           aria-labelledby="titulo-confirmacao-exclusao"
+          aria-describedby="descricao-confirmacao-exclusao"
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
         >
           <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-lg">
@@ -184,16 +216,30 @@ export default function Locais() {
               Confirmar exclusão
             </h2>
 
-            <p className="mt-3 text-gray-600">
+            <p
+              id="descricao-confirmacao-exclusao"
+              className="mt-3 text-gray-600"
+            >
               Tem certeza que deseja excluir o local{' '}
-              <strong>{localParaExcluir.nome}</strong>?
+              <strong>{localParaExcluir.nome}</strong>? Esta ação não poderá
+              ser desfeita.
             </p>
 
-            <div className="mt-6 flex justify-end gap-3">
+            {erroExclusao && (
+              <p
+                role="alert"
+                className="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-800"
+              >
+                {erroExclusao}
+              </p>
+            )}
+
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
               <button
                 type="button"
-                onClick={() => setLocalParaExcluir(null)}
-                className="min-h-11 rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-700"
+                onClick={cancelarExclusao}
+                disabled={isExcluindo}
+                className="min-h-11 rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Cancelar
               </button>
@@ -201,9 +247,10 @@ export default function Locais() {
               <button
                 type="button"
                 onClick={confirmarExclusao}
-                className="min-h-11 rounded-lg bg-red-700 px-4 py-2 font-medium text-white hover:bg-red-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700"
+                disabled={isExcluindo}
+                className="min-h-11 rounded-lg bg-red-700 px-4 py-2 font-medium text-white hover:bg-red-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                Excluir
+                {isExcluindo ? 'Excluindo...' : 'Excluir'}
               </button>
             </div>
           </div>
