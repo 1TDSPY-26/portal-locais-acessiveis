@@ -3,7 +3,6 @@ import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import EditLocation from './EditLocation'
-
 import {
   atualizarLocal,
   obterLocalPorId,
@@ -58,7 +57,6 @@ describe('EditLocation', () => {
     })
 
     expect(input).toHaveValue('Biblioteca Central')
-
     expect(obterLocalPorId).toHaveBeenCalledWith(1)
   })
 
@@ -89,5 +87,38 @@ describe('EditLocation', () => {
     expect(
       screen.getByText('Local atualizado com sucesso!'),
     ).toBeInTheDocument()
+  })
+
+  it('exibe a mensagem de erro retornada pela API', async () => {
+    const user = userEvent.setup()
+
+    vi.mocked(atualizarLocal).mockResolvedValueOnce({
+      error: {
+        message: 'Erro ao atualizar o local',
+      },
+    })
+
+    render(<EditLocation />)
+
+    const input = await screen.findByRole('textbox', {
+      name: 'Nome do Local:',
+    })
+
+    await user.clear(input)
+    await user.type(input, 'Novo Nome')
+
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Salvar Alterações',
+      }),
+    )
+
+    expect(
+      await screen.findByText('Erro ao atualizar o local'),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.queryByText('Local atualizado com sucesso!'),
+    ).not.toBeInTheDocument()
   })
 })
