@@ -28,6 +28,7 @@ beforeEach(async () => {
 })
 
 afterEach(() => {
+  vi.useRealTimers()
   fetchMock.mockReset()
   vi.unstubAllEnvs()
   vi.unstubAllGlobals()
@@ -103,5 +104,72 @@ describe('apiRequest - sucesso', () => {
     expect(resultado).toEqual({ data: undefined })
     expect(resultado.error).toBeUndefined()
     expect(leituraJson).not.toHaveBeenCalled()
+  })
+})
+
+describe('apiRequest - erros', () => {
+  it.each([400, 404, 500, 503])(
+    'devolve erro com o status %i quando a resposta não é ok, sem ler o corpo',
+    async (status) => {
+      const resposta = respostaJson({ detalhe: 'falhou' }, status)
+      const leituraJson = vi.spyOn(resposta, 'json')
+      fetchMock.mockResolvedValue(resposta)
+
+      const resultado = await apiRequest('/locais')
+
+      expect(resultado).toEqual({
+        error: { message: 'Erro na requisição', status },
+      })
+      expect(resultado.data).toBeUndefined()
+      expect(leituraJson).not.toHaveBeenCalled()
+    }
+  )
+
+  it('devolve erro de conexão quando o fetch é rejeitado', async () => {
+    fetchMock.mockRejectedValue(new TypeError('Failed to fetch'))
+
+    const resultado = await apiRequest('/locais')
+
+    expect(resultado).toEqual({
+      error: { message: 'Erro de conexão com a API' },
+    })
+  })
+
+  it('aborta a requisição após 10 segundos e devolve erro de tempo limite', async () => {
+    vi.useFakeTimers()
+    // Como o fetch real, rejeita com o motivo do abort (DOMException AbortError).
+    fetchMock.mockImplementation(
+      (_url, opcoes) =>
+        new Promise((_resolve, reject) => {
+          const signal = opcoes?.signal
+          signal?.addEventListener('abort', () => reject(signal.reason))
+        })
+    )
+
+    const requisicao = apiRequest('/locais')
+    const { signal } = opcoesEnviadas()
+
+    await vi.advanceTimersByTimeAsync(9999)
+    expect(signal?.aborted).toBe(false)
+
+    await vi.advanceTimersByTimeAsync(1)
+    expect(signal?.aborted).toBe(true)
+
+    await expect(requisicao).resolves.toEqual({
+      error: { message: 'Tempo limite da requisição excedido' },
+    })
+  })
+
+  it.each([
+    ['sucesso', () => fetchMock.mockResolvedValue(respostaJson({}))],
+    ['erro HTTP', () => fetchMock.mockResolvedValue(respostaJson({}, 500))],
+    ['falha de rede', () => fetchMock.mockRejectedValue(new TypeError('Failed to fetch'))],
+  ])('limpa o timer de tempo limite após %s', async (_cenario, prepararFetch) => {
+    vi.useFakeTimers()
+    prepararFetch()
+
+    await apiRequest('/locais')
+
+    expect(vi.getTimerCount()).toBe(0)
   })
 })
