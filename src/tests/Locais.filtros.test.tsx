@@ -49,10 +49,9 @@ function renderizarPagina() {
 
 describe('Filtros de locais', () => {
   beforeEach(() => {
-    vi.mocked(listarLocais).mockResolvedValue({
-      data: locaisMock,
-      error: null,
-    })
+   vi.mocked(listarLocais).mockResolvedValue({
+  data: locaisMock,
+})
   })
 
   it('filtra os locais pela categoria selecionada', async () => {

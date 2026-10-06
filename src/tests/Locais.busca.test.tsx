@@ -40,10 +40,9 @@ function renderizarPagina() {
 
 describe('Busca de locais', () => {
   beforeEach(() => {
-    vi.mocked(listarLocais).mockResolvedValue({
-      data: locaisMock,
-      error: null,
-    })
+   vi.mocked(listarLocais).mockResolvedValue({
+  data: locaisMock,
+})
   })
 
   it('filtra os locais pelo nome digitado na busca', async () => {
