@@ -3,9 +3,10 @@ import type { Local } from '../../types/Local'
 
 type LocalCardProps = {
   local: Local
+  onExcluir: (local: Local) => void
 }
 
-export default function LocalCard({ local }: LocalCardProps) {
+export default function LocalCard({ local, onExcluir }: LocalCardProps) {
   return (
     <article className="flex min-w-0 flex-col justify-between gap-3 break-words rounded-xl border border-gray-200 p-4 shadow-sm">
       <div>
@@ -31,13 +32,22 @@ export default function LocalCard({ local }: LocalCardProps) {
         </ul>
       </div>
 
-      <Link
-        to={`/locais/${local.id}`}
-        className="inline-flex min-h-11 items-center text-sm font-medium text-blue-700 underline hover:text-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700"
-      >
-        Ver detalhes<span className="sr-only"> de {local.nome}</span>
-      </Link>
+      <div className="flex items-center justify-between gap-4">
+        <Link
+          to={`/locais/${local.id}`}
+          className="inline-flex min-h-11 items-center text-sm font-medium text-blue-700 underline hover:text-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700"
+        >
+          Ver detalhes<span className="sr-only"> de {local.nome}</span>
+        </Link>
+
+        <button
+          type="button"
+          onClick={() => onExcluir(local)}
+          className="inline-flex min-h-11 items-center text-sm font-medium text-red-700 underline hover:text-red-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700"
+        >
+          Excluir<span className="sr-only"> {local.nome}</span>
+        </button>
+      </div>
     </article>
   )
 }
-
