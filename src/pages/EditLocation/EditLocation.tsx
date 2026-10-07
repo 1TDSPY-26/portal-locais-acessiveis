@@ -123,21 +123,9 @@ export default function EditLocation() {
 
         <button
           type="submit"
-<<<<<<< HEAD
           bg-blue-700 text-white
           rounded-md
-=======
-          style={{
-            padding: '10px 20px',
-            fontSize: '16px',
-            backgroundColor: '#007bff',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '4px',
-            'cursor-pointer'
-          }}
->>>>>>> 5b62f40f227066a8d2eaeff5ffc0b555923fc3d0
-        >
+          >
           Salvar Alterações
         </button>
       </form>
