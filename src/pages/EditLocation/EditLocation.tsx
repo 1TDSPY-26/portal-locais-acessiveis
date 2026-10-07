@@ -85,7 +85,7 @@ export default function EditLocation() {
   }
 
   return (
-    <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
+    <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
       <h2>Editar Local</h2>
 
       {errorMessage && (
@@ -100,8 +100,8 @@ export default function EditLocation() {
         </p>
       )}
 
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '15px' }}>
+      <form onSubmit={handleSubmit} className='formDados'>
+        <div className=" space-y-6 ">
           <label
             htmlFor="name"
             style={{ display: 'block', marginBottom: '5px' }}
@@ -132,7 +132,7 @@ export default function EditLocation() {
             color: '#fff',
             border: 'none',
             borderRadius: '4px',
-            cursor: 'pointer',
+            'cursor-pointer'
           }}
         >
           Salvar Alterações
