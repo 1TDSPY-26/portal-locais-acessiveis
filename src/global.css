@@ -10,3 +10,31 @@
     color: #111827;
   }
 }
+
+html[data-fonte="grande"] {
+  font-size: 112.5%;
+}
+
+html[data-contraste="alto"] {
+  background-color: black;
+  color: white;
+}
+
+html[data-contraste="alto"] body,
+html[data-contraste="alto"] header,
+html[data-contraste="alto"] footer,
+html[data-contraste="alto"] main {
+  background-color: black;
+  color: white;
+  border-color: white;
+}
+
+html[data-contraste="alto"] a {
+  color: yellow;
+  text-decoration: underline;
+}
+
+html[data-contraste="alto"] :focus-visible {
+  outline: 3px solid yellow;
+  outline-offset: 2px;
+}
