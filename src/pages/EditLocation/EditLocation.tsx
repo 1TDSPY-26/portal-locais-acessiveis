@@ -89,12 +89,14 @@ export default function EditLocation() {
       <h1>Editar Local</h1>
 
       {errorMessage && (
-        <p style={{ color: 'red' }}>{errorMessage}</p>
+        <p className="rounded-md border border-red-300 p-3 text-red-800">
+          Erro: {errorMessage}
+        </p>
       )}
 
       {isSuccess && (
-        <p style={{ color: 'green' }}>
-          Local atualizado com sucesso!
+        <p className="rounded-md border border-green-300 p-3 text-green-900">
+          Sucesso: Local atualizado com sucesso!
         </p>
       )}
 
