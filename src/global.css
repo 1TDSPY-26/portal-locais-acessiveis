@@ -9,4 +9,12 @@
     background-color: #ffffff;
     color: #111827;
   }
+
+  .formDados{
+    & div{
+      & label{
+        @apply
+      }
+    }
+  }
 }
