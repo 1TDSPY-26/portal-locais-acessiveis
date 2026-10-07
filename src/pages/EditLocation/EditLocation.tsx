@@ -130,7 +130,7 @@ export default function EditLocation() {
             color: '#fff',
             border: 'none',
             borderRadius: '4px',
-            cursor: 'pointer',
+            'cursor-pointer'
           }}
         >
           Salvar Alterações
