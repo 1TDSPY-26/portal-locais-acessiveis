@@ -86,7 +86,7 @@ export default function EditLocation() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
-      <h2>Editar Local</h2>
+      <h1>Editar Local</h1>
 
       {errorMessage && (
         <p style={{ color: 'red' }}>{errorMessage}</p>
@@ -123,15 +123,8 @@ export default function EditLocation() {
 
         <button
           type="submit"
-          style={{
-            padding: '10px 20px',
-            fontSize: '16px',
-            backgroundColor: '#007bff',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-          }}
+          bg-blue-700 text-white
+          rounded-md
         >
           Salvar Alterações
         </button>
