@@ -98,7 +98,7 @@ export default function EditLocation() {
         </p>
       )}
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className='formDados'>
         <div className=" space-y-6 ">
           <label
             htmlFor="name"
