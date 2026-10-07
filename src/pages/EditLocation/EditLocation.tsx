@@ -85,7 +85,7 @@ export default function EditLocation() {
   }
 
   return (
-    <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
+    <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
       <h2>Editar Local</h2>
 
       {errorMessage && (
@@ -99,7 +99,7 @@ export default function EditLocation() {
       )}
 
       <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '15px' }}>
+        <div className=" space-y-6 ">
           <label
             htmlFor="name"
             style={{ display: 'block', marginBottom: '5px' }}
