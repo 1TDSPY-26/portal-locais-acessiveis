@@ -48,6 +48,8 @@ export function useLocais() {
 
       const cacheAtualizado = lerCache()
 
+      //feito pelo integrante @brunohpdev pelo live share
+
       setLocais(dados)
 
       setAtualizadoEm(
