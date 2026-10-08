@@ -13,6 +13,8 @@ import {
   salvarCache,
 } from './cachelocais'
 
+//Implementado por Nicolas Kristman rm573541
+
 describe('cacheLocais', () => {
   beforeEach(() => {
     invalidarCacheLocais()
