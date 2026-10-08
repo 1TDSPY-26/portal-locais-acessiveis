@@ -10,15 +10,4 @@
     color: #111827;
   }
 
-  .formDados{
-    & div{
-      & label{
-        @apply mb-1 block;
-      }
-
-      & input{
-        @apply w-full px-3 py-2 text-base;
-      }
-    }
-  }
 }

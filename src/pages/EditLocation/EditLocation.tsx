@@ -100,11 +100,11 @@ export default function EditLocation() {
         </p>
       )}
 
-      <form onSubmit={handleSubmit} className='formDados'>
+      <form onSubmit={handleSubmit}>
         <div className=" space-y-6 ">
           <label
             htmlFor="name"
-            style={{ display: 'block', marginBottom: '5px' }}
+            className='mb-1 block'
           >
             Nome do Local:
           </label>
@@ -114,11 +114,8 @@ export default function EditLocation() {
             type="text"
             value={name}
             onChange={(event) => setName(event.target.value)}
-            style={{
-              width: '100%',
-              padding: '8px',
-              fontSize: '16px',
-            }}
+            className='w-full px-3 py-2 text-base'
+   
             required
           />
         </div>
