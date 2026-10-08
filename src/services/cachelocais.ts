@@ -30,3 +30,5 @@ export function salvarCache(dados: Local[]): void {
 export function invalidarCacheLocais(): void {
   cache = null
 }
+
+//Cache em memória - implementado pelo integrante Murilo Castellano rm569757
