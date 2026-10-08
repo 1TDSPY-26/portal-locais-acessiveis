@@ -100,8 +100,8 @@ export default function EditLocation() {
         </p>
       )}
 
-      <form onSubmit={handleSubmit}>
-        <div className=" space-y-6 ">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div >
           <label
             htmlFor="name"
             className='mb-1 block'
@@ -122,8 +122,7 @@ export default function EditLocation() {
 
         <button
           type="submit"
-          bg-blue-700 text-white
-          rounded-md
+          className='min-h-11 bg-blue-700 text-white rounded-md px-4 py-2 cursor-pointer focus-visible:outline-blue-700'
           >
           Salvar Alterações
         </button>
