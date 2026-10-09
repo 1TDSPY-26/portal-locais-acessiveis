@@ -56,3 +56,5 @@ export async function removerLocal(id: number) {
     method: 'DELETE',
   })
 }
+
+// Integrante: Bryan Germano -- serviço de locais
