@@ -1,5 +1,5 @@
 import type { Local } from "../../types/Local";
-import NotaAcessibilidade from "../NotaAcessibilidade/NotaAcessibilidade";
+import NotaAcessibilidade from "../NotaAcessibilidade/NotaAcessibilidade.tsx";
 
 type Props = {
   local: Local;

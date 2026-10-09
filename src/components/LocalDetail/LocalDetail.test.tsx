@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
-import LocalDetail from './LocalDetail'
+import LocalDetail from './LocalDetail.tsx'
 import type { Local } from '../../types/Local'
 
 const base: Local = {
