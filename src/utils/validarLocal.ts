@@ -1,4 +1,5 @@
 import type { Local } from "../types/Local";
+import { normalizarNota } from "./nota";
 
 export type ErrosLocal = {
   nome?: string;
@@ -22,8 +23,8 @@ function validarDescricao(descricao: string) {
   return undefined;
 }
 
-function ehNotaValida(nota: number) {
-  return nota >= 1 && nota <= 5;
+function ehNotaValida(nota: number | null) {
+  return normalizarNota(nota) !== null;
 }
 
 export function validarLocal(dados: Local) {
