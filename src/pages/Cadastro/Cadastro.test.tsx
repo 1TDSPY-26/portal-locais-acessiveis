@@ -28,7 +28,7 @@ async function preencherEEnviar(espacos = '') {
   await usuario.type(screen.getByLabelText(/nome do local/i), `${espacos}${museu.nome}${espacos}`)
   await usuario.type(screen.getByLabelText(/endereço/i), `${espacos}${museu.endereco}${espacos}`)
   await usuario.type(screen.getByLabelText(/categoria/i), `${espacos}${museu.categoria}${espacos}`)
-  await usuario.type(screen.getByLabelText(/descrição/i), `${espacos}${museu.descricao}${espacos}`)
+  await usuario.type(screen.getByLabelText(/^descrição/i), `${espacos}${museu.descricao}${espacos}`)
   await usuario.click(screen.getByLabelText('Rampa'))
   await usuario.selectOptions(screen.getByLabelText(/nota de acessibilidade/i), '4')
   await usuario.click(screen.getByRole('button', { name: /cadastrar local/i }))
@@ -71,5 +71,6 @@ describe('Cadastro integrado à API', () => {
         descricao: 'Museu com rampa',
       }),
     )
+    expect(vi.mocked(criarLocal).mock.calls[0][0]).not.toHaveProperty('id')
   })
 })

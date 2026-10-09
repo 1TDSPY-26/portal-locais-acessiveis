@@ -90,7 +90,23 @@ export default function CadastroForm({ onSubmit, enviando = false }: CadastroFor
       <CampoTexto id="endereco" rotulo="Endereço" valor={dados.endereco} erro={erros.endereco} onChange={(valor) => alterarCampo('endereco', valor)} />
       <CampoTexto id="categoria" rotulo="Categoria" valor={dados.categoria} erro={erros.categoria} onChange={(valor) => alterarCampo('categoria', valor)} />
 
-      {/* descrição: textarea, mesmo padrão do CampoTexto (label, aria-invalid, aria-describedby) */}
+      
+        <div>
+          <label htmlFor="descricao" className="block font-medium">Descrição</label>
+          <textarea
+            id="descricao"
+            value={dados.descricao}
+            onChange={(e) => alterarCampo('descricao', e.target.value)}
+            aria-invalid={erros.descricao ? true : undefined}
+            aria-describedby={erros.descricao ? 'erro-descricao' : undefined}
+            rows={4}
+            className="mt-1 block w-full rounded-md border border-gray-400 px-3 py-2"
+          />
+          {erros.descricao && (
+            <p id="erro-descricao" className="mt-1 text-sm text-red-800">{erros.descricao}</p>
+          )}
+        </div>
+      
 
       <fieldset aria-describedby={erros.tiposAcessibilidade ? 'erro-tiposAcessibilidade' : undefined}>
         <legend className="font-medium">
@@ -115,7 +131,29 @@ export default function CadastroForm({ onSubmit, enviando = false }: CadastroFor
         )}
       </fieldset>
 
-      {/* nota: <select id="notaAcessibilidade"> com "Selecione" (valor 0) e as notas de 1 a 5 */}
+      
+        <div>
+          <label htmlFor="notaAcessibilidade" className="block font-medium">Nota de acessibilidade</label>
+          <select
+            id="notaAcessibilidade"
+            value={dados.notaAcessibilidade}
+            onChange={(e) => alterarCampo('notaAcessibilidade', Number(e.target.value))}
+            aria-invalid={erros.notaAcessibilidade ? true : undefined}
+            aria-describedby={erros.notaAcessibilidade ? 'erro-notaAcessibilidade' : undefined}
+            className="mt-1 block min-h-11 w-full rounded-md border border-gray-400 px-3"
+          >
+            <option value={0}>Selecione</option>
+            {[1, 2, 3, 4, 5].map((nota) => (
+              <option key={nota} value={nota}>
+                {nota}
+              </option>
+            ))}
+          </select>
+            {erros.notaAcessibilidade && (
+              <p id="erro-notaAcessibilidade" className="mt-1 text-sm text-red-800">{erros.notaAcessibilidade}</p>
+            )}
+          </div>
+      
 
       <button
         type="submit"
