@@ -1,4 +1,5 @@
 import type { Local } from "../../types/Local";
+import NotaAcessibilidade from "../NotaAcessibilidade/NotaAcessibilidade";
 
 type Props = {
   local: Local;
@@ -20,6 +21,11 @@ export default function LocalDetail({ local }: Props) {
             <li key={tipo}>{tipo}</li>
           ))}
         </ul>
+      </div>
+
+      <div>
+        <strong>Nota de acessibilidade:</strong>
+        <NotaAcessibilidade nota={local.notaAcessibilidade} />
       </div>
     </section>
   );
