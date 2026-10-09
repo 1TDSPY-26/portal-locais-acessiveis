@@ -13,7 +13,6 @@ export function paginar(lista: Local[], pagina: number, porPagina: number): Resu
   const total = lista.length
   const totalPaginas = total === 0 ? 1 : Math.ceil(total / porPagina)
   
-  // Corrige a página solicitada para ficar no intervalo [1, totalPaginas]
   const paginaAtual = Math.max(1, Math.min(pagina, totalPaginas))
   
   if (total === 0) {

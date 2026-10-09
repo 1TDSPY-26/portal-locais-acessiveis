@@ -7,7 +7,6 @@ type PaginacaoProps = {
 }
 
 export default function Paginacao({ paginaAtual, totalPaginas, onMudarPagina }: PaginacaoProps) {
-  // Com 1 página ou menos, não mostra nada
   if (totalPaginas <= 1) {
     return null
   }
