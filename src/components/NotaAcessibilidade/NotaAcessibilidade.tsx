@@ -1,7 +1,7 @@
-import { NOTA_MAXIMA, normalizarNota } from '../../utils/nota'
+import { NOTA_MAXIMA, normalizarNota } from '../../utils/nota.ts'
 
 type NotaAcessibilidadeProps = {
-  nota?: number | null
+nota?: number | null
 }
 
 const formatadorNota = new Intl.NumberFormat('pt-BR', {
