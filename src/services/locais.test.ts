@@ -71,6 +71,14 @@ describe('listarLocais', () => {
   })
 })
 
+describe('obterLocalPorId', () => {
+    it('chama o endpoint /locais/{id} com o método GET', async () => {
+        await obterLocalPorId(4)
+
+        expect(apiRequestFalso).toHaveBeenCalledWith('/locais/4')
+    })
+})
+
 describe('criarLocal', () => {
   it('faz POST em /locais com o corpo em JSON', async () => {
     // TODO: conferir endpoint, method 'POST' e body com JSON.stringify(novoLocal)
