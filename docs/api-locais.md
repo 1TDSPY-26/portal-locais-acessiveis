@@ -11,7 +11,7 @@ os endpoints e os exemplos com a documentação do servidor.
 A URL-base vem de `VITE_API_URL`. O valor em [`.env.example`](../.env.example)
 é apenas `https://api.exemplo.com`, portanto não identifica uma API disponível.
 Sem uma URL real configurada, consultas e cadastros não podem ser validados de
-ponta a ponta. A variável do Vite é pública no navegador: não incluir segredos.
+ponta a ponta. A variável do Vite é pública no navegador: não incluir segredos. Caso `VITE_API_URL` não esteja definida, a aplicação adota por padrão o fallback local `http://localhost:3000`.
 
 ## Operações usadas pelo frontend
 
