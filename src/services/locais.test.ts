@@ -91,6 +91,18 @@ describe('criarLocal', () => {
   })
 })
 
+describe('atualizarLocal', () => {
+    it('faz PUT em /locais/{id} com o corpo em JSON', async () => {
+        const atualizacao = { nome: 'Fiap Aclimação'}
+        await atualizarLocal(4, atualizacao)
+
+        expect(apiRequestFalso).toHaveBeenCalledWith('/locais/4', {
+            method: 'PUT',
+            body: JSON.stringify(atualizacao)
+        })
+    })
+})
+
 describe('removerLocal', () => {
   it('faz DELETE em /locais/{id}', async () => {
     // TODO: conferir '/locais/5' com method 'DELETE'
