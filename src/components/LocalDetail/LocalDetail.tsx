@@ -1,10 +1,13 @@
 import type { Local } from "../../types/Local";
+import { EmptyState } from "../EmptyState/EmptyState";
 
 type Props = {
   local: Local;
 };
 
 export default function LocalDetail({ local }: Props) {
+  const semRecursos = local.tiposAcessibilidade.length === 0;
+
   return (
     <section className="local-detalhe">
       <h2>{local.nome}</h2>
@@ -15,11 +18,21 @@ export default function LocalDetail({ local }: Props) {
 
       <div>
         <strong>Acessibilidade:</strong>
-        <ul>
-          {local.tiposAcessibilidade.map((tipo) => (
-            <li key={tipo}>{tipo}</li>
-          ))}
-        </ul>
+        {semRecursos ? (
+          <EmptyState
+            titulo="Nenhum recurso de acessibilidade informado."
+            link={{
+              rotulo: "Adicionar recursos",
+              para: `/locais/editar/${local.id}`,
+            }}
+          />
+        ) : (
+          <ul>
+            {local.tiposAcessibilidade.map((tipo) => (
+              <li key={tipo}>{tipo}</li>
+            ))}
+          </ul>
+        )}
       </div>
     </section>
   );

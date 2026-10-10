@@ -8,6 +8,17 @@ import { EmptyState } from '../../components/EmptyState/EmptyState'
 import CampoBusca from '../../components/CampoBusca/CampoBusca'
 import FiltrosLocais from '../../components/FiltrosLocais/FiltrosLocais'
 
+function descreverFiltrosAtivos(busca: string, categoria: string, recursos: string[]) {
+  const partes: string[] = []
+
+  if (busca.trim()) partes.push(`busca "${busca.trim()}"`)
+  if (categoria) partes.push(`categoria "${categoria}"`)
+  if (recursos.length > 0) partes.push(`${recursos.length} recurso(s) marcado(s)`)
+
+  if (partes.length === 0) return 'Tente outros termos de busca.'
+  return `Nenhum local corresponde a: ${partes.join(', ')}. Tente remover algum filtro.`
+}
+
 function normalizar(texto: string) {
   return texto.toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
 }
@@ -103,13 +114,20 @@ export default function Locais() {
           <ErrorMessage message={errorMessage} onRetry={loadLocais} />
         )}
 
-        {!isLoading && !errorMessage && locais.length === 0 && (
-          <EmptyState message="Nenhum local cadastrado até o momento." />
-        )}
-
-        {!isLoading && !errorMessage && locais.length > 0 && locaisVisiveis.length === 0 && (
-          <EmptyState message="Nenhum local corresponde à pesquisa e aos filtros selecionados." />
-        )}
+       {!isLoading && !errorMessage && locais.length === 0 && (
+  <EmptyState
+    titulo="Ainda não há locais cadastrados"
+    descricao="Conhece um lugar acessível? Ajude outras pessoas cadastrando-o."
+    link={{ rotulo: 'Cadastrar o primeiro local', para: '/cadastro' }}
+  />
+)}
+{!isLoading && !errorMessage && locais.length > 0 && locaisVisiveis.length === 0 && (
+  <EmptyState
+    titulo="Nenhum local encontrado"
+    descricao={descreverFiltrosAtivos(busca, categoria, recursos)}
+    botao={{ rotulo: 'Mostrar todos os locais', onClick: limparFiltros }}
+  />
+)}
 
         {!isLoading && !errorMessage && locaisVisiveis.length > 0 && (
           <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
