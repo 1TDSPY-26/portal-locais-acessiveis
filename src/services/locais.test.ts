@@ -44,6 +44,12 @@ describe('listarLocais', () => {
 
   it('ignora filtros vazios', async () => {
     // TODO: categoria '' e pagina 0 → a chamada continua sendo só '/locais'
+    await listarLocais({
+        categoria: '',
+        pagina: 0
+    })
+
+    expect(apiRequestFalso).toHaveBeenCalledWith('/locais')
   })
 
   it('devolve o resultado do apiRequest sem alterar', async () => {
