@@ -62,6 +62,12 @@ describe('listarLocais', () => {
 
   it('devolve o resultado do apiRequest sem alterar', async () => {
     // TODO: fazer o falso devolver um objeto e conferir que listarLocais devolve o MESMO objeto (toBe)
+    const resultadoFalso = [{ id: 1, nome: 'Fiap Paulista'}]
+    apiRequestFalso.mockResolvedValue(resultadoFalso as any)
+
+    const resultado = await listarLocais()
+
+    expect(resultado).toBe(resultadoFalso)
   })
 })
 
