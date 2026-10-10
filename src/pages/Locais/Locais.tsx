@@ -7,6 +7,8 @@ import ErrorMessage from '../../components/Error/ErrorMessage'
 import { EmptyState } from '../../components/EmptyState/EmptyState'
 import CampoBusca from '../../components/CampoBusca/CampoBusca'
 import FiltrosLocais from '../../components/FiltrosLocais/FiltrosLocais'
+import SeletorOrdenacao from '../../components/SeletorOrdenacao/SeletorOrdenacao'
+import { ordenarLocais, type CriterioOrdenacao } from '../../utils/ordenarLocais'
 
 function normalizar(texto: string) {
   return texto.toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -20,6 +22,7 @@ export default function Locais() {
   const [busca, setBusca] = useState('')
   const [categoria, setCategoria] = useState('')
   const [recursos, setRecursos] = useState<string[]>([])
+  const [ordenacao, setOrdenacao] = useState<CriterioOrdenacao>('nome-asc')
 
   const categorias = useMemo(
     () => [...new Set(locais.map((local) => local.categoria))].sort(),
@@ -37,6 +40,11 @@ export default function Locais() {
       recursos.every((recurso) => local.tiposAcessibilidade.includes(recurso)),
     )
   }, [locais, busca, categoria, recursos])
+
+  const locaisOrdenados = useMemo(
+    () => ordenarLocais(locaisVisiveis, ordenacao),
+    [locaisVisiveis, ordenacao],
+  )
 
   const limparFiltros = () => {
     setBusca('')
@@ -91,6 +99,7 @@ export default function Locais() {
               onRecursosChange={setRecursos}
               onLimpar={limparFiltros}
             />
+            <SeletorOrdenacao valor={ordenacao} onChange={setOrdenacao} />
             <p role="status" aria-live="polite">
               {locaisVisiveis.length} {locaisVisiveis.length === 1 ? 'local encontrado' : 'locais encontrados'}
             </p>
@@ -111,9 +120,9 @@ export default function Locais() {
           <EmptyState message="Nenhum local corresponde à pesquisa e aos filtros selecionados." />
         )}
 
-        {!isLoading && !errorMessage && locaisVisiveis.length > 0 && (
+        {!isLoading && !errorMessage && locaisOrdenados.length > 0 && (
           <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {locaisVisiveis.map((local) => (
+            {locaisOrdenados.map((local) => (
               <LocalCard key={local.id} local={local} />
             ))}
           </div>
