@@ -73,9 +73,9 @@ describe('listarLocais', () => {
 
 describe('obterLocalPorId', () => {
     it('chama o endpoint /locais/{id} com o método GET', async () => {
-        await obterLocalPorId(4)
+        await obterLocalPorId(5)
 
-        expect(apiRequestFalso).toHaveBeenCalledWith('/locais/4')
+        expect(apiRequestFalso).toHaveBeenCalledWith('/locais/5')
     })
 })
 
@@ -94,9 +94,9 @@ describe('criarLocal', () => {
 describe('atualizarLocal', () => {
     it('faz PUT em /locais/{id} com o corpo em JSON', async () => {
         const atualizacao = { nome: 'Fiap Aclimação'}
-        await atualizarLocal(4, atualizacao)
+        await atualizarLocal(5, atualizacao)
 
-        expect(apiRequestFalso).toHaveBeenCalledWith('/locais/4', {
+        expect(apiRequestFalso).toHaveBeenCalledWith('/locais/5', {
             method: 'PUT',
             body: JSON.stringify(atualizacao)
         })
@@ -106,7 +106,10 @@ describe('atualizarLocal', () => {
 describe('removerLocal', () => {
   it('faz DELETE em /locais/{id}', async () => {
     // TODO: conferir '/locais/5' com method 'DELETE'
+    await removerLocal(5)
+
+    expect(apiRequestFalso).toHaveBeenCalledWith('/locais/5', {
+        method: 'DELETE'
+    })
   })
 })
-
-// TODO: describe de obterLocalPorId e de atualizarLocal (PUT com corpo JSON)
