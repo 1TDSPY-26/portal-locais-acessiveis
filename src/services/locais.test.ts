@@ -52,6 +52,14 @@ describe('listarLocais', () => {
     expect(apiRequestFalso).toHaveBeenCalledWith('/locais')
   })
 
+  it('uso de caracteres especiais nos filtros', async () => {
+    await listarLocais({
+        categoria: 'Saúde & Bem-estar'
+    })
+
+    expect(apiRequestFalso).toHaveBeenCalledWith('/locais?categoria=Sa%C3%BAde+%26+Bem-estar')
+  })
+
   it('devolve o resultado do apiRequest sem alterar', async () => {
     // TODO: fazer o falso devolver um objeto e conferir que listarLocais devolve o MESMO objeto (toBe)
   })
