@@ -82,6 +82,12 @@ describe('obterLocalPorId', () => {
 describe('criarLocal', () => {
   it('faz POST em /locais com o corpo em JSON', async () => {
     // TODO: conferir endpoint, method 'POST' e body com JSON.stringify(novoLocal)
+    await criarLocal(novoLocal)
+
+    expect(apiRequestFalso).toHaveBeenCalledWith('/locais', {
+        method: 'POST',
+        body: JSON.stringify(novoLocal)
+    })
   })
 })
 
