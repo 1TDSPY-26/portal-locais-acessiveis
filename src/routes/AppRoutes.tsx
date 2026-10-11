@@ -22,8 +22,6 @@ export default function AppRoutes() {
 
           <Route path="/locais/:id" element={<LocalDetalhe />} />
 
-          <Route path="/locais/:id" element={<h1>Detalhe do Local</h1>} />
-
           <Route path="/cadastro" element={<Cadastro />} />
           <Route path="/cadastrar" element={<Navigate to="/cadastro" replace />} />
           <Route path="/sobre" element={<Sobre />} />
