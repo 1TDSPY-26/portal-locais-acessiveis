@@ -1,6 +1,6 @@
 import { createServer } from 'node:http'
 
-const mode = process.argv[2] ? ? 'success'
+const mode = process.argv[2] || 'success'
 const locais = [
     { id: 1, nome: 'Biblioteca Central', endereco: 'Rua A, 10', categoria: 'Cultura', tiposAcessibilidade: ['Rampa', 'Elevador'], descricao: 'Espaço de leitura', notaAcessibilidade: 4 },
     { id: 2, nome: 'Parque Verde', endereco: 'Rua B, 20', categoria: 'Lazer', tiposAcessibilidade: ['Rampa'], descricao: 'Área de lazer', notaAcessibilidade: 3 },
@@ -19,7 +19,8 @@ createServer((request, response) => {
         response.writeHead(200).end(JSON.stringify(mode === 'empty' ? [] : locais))
         return
     }
-    const id = Number(request.url ? .match(/^\/locais\/(\d+)$/) ? .[1])
+    const match = /^\/locais\/(\d+)$/.exec(request.url || '')
+    const id = Number(match ? match[1] : undefined)
     const local = locais.find((item) => item.id === id)
-    response.writeHead(local ? 200 : 404).end(JSON.stringify(local ? ? { error: 'não encontrado' }))
+    response.writeHead(local ? 200 : 404).end(JSON.stringify(local || { error: 'não encontrado' }))
 }).listen(4000, '127.0.0.1', () => console.log(`mock-api:${mode}:4000`))
