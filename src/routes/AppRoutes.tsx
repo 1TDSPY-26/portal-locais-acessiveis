@@ -5,6 +5,7 @@ import NotFound from "../pages/NotFound/NotFound";
 import ErrorBoundary from "../components/Error/ErrorBoundary";
 import Home from "../pages/Home/Home";
 import Locais from "../pages/Locais/Locais";
+import LocalDetalhe  from "../pages/LocalDetalhe/LocalDetalhe";
 import LocalDetail from "../components/LocalDetail/LocalDetail";
 import Sobre from "../pages/Sobre/Sobre";
 import Acessibilidade from "../pages/Acessibilidade/Acessibilidade";
@@ -19,7 +20,7 @@ export default function AppRoutes() {
           <Route path="/locais" element={<Locais />} />
 
           <Route path="/locais/editar/:id" element={<EditLocation />} />
-
+          <Route path="/locais/:id" element={<LocalDetalhe />} />
           <Route path="/locais/:id" element={< LocalDetail />} />
 
           <Route path="/cadastro" element={<Cadastro />} />
