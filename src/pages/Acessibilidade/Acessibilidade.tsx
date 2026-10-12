@@ -1,4 +1,7 @@
+import { useTituloDocumento } from '../../hooks/useTituloDocumento'
+
 export default function Acessibilidade() {
+  useTituloDocumento('Acessibilidade')
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
       <h1 className="text-3xl font-bold">Acessibilidade do portal</h1>
