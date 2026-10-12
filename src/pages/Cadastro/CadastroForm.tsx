@@ -49,12 +49,16 @@ const LOCAL_VAZIO: Local = {
 type CadastroFormProps = {
   onSubmit: (dados: Local) => void
   enviando?: boolean
+  valoresIniciais?: Local
+  erroApi?: string
 }
 
-export default function CadastroForm({ onSubmit, enviando = false }: CadastroFormProps) {
-  const [dados, setDados] = useState<Local>(LOCAL_VAZIO)
+export default function CadastroForm({
+  onSubmit, enviando = false, valoresIniciais, erroApi,
+}: CadastroFormProps) {
+  const modoEdicao = Boolean(valoresIniciais)
+  const [dados, setDados] = useState<Local>(valoresIniciais ?? LOCAL_VAZIO)
   const [erros, setErros] = useState<ErrosLocal>({})
-
   function alterarCampo(campo: keyof Local, valor: string | number | string[]) {
     setDados({ ...dados, [campo]: valor })
     setErros({ ...erros, [campo]: undefined })
@@ -111,8 +115,9 @@ export default function CadastroForm({ onSubmit, enviando = false }: CadastroFor
           ))}
         </div>
         {erros.tiposAcessibilidade && (
-          <p id="erro-tiposAcessibilidade" className="mt-1 text-sm text-red-800">{erros.tiposAcessibilidade}</p>
-        )}
+          
+     <p role="alert" className="rounded-md border border-red-800 p-3 text-red-800">{erroApi}</p>
+   )}
       </fieldset>
 
       {/* nota: <select id="notaAcessibilidade"> com "Selecione" (valor 0) e as notas de 1 a 5 */}
@@ -122,7 +127,9 @@ export default function CadastroForm({ onSubmit, enviando = false }: CadastroFor
         disabled={enviando}
         className="inline-flex min-h-11 items-center rounded-md bg-blue-700 px-5 font-medium text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 disabled:opacity-60"
       >
-        {enviando ? 'Cadastrando...' : 'Cadastrar local'}
+           {enviando
+     ? (modoEdicao ? 'Salvando...' : 'Cadastrando...')
+     : (modoEdicao ? 'Salvar alterações' : 'Cadastrar local')}
       </button>
     </form>
   )
