@@ -1,15 +1,17 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
   atualizarLocal as updateLocation,
   obterLocalPorId as getLocationById,
 } from '../../services/locais'
+import CadastroForm from '../Cadastro/CadastroForm'
+import type { Local } from '../../types/Local'
 
 export default function EditLocation() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
 
-  const [name, setName] = useState('')
+  const [local, setLocal] = useState<Local | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
   const [isSuccess, setIsSuccess] = useState(false)
@@ -38,7 +40,7 @@ export default function EditLocation() {
           return
         }
 
-        setName(data.nome)
+        setLocal(data)
       } catch {
         setErrorMessage('Erro inesperado ao carregar os dados do local.')
       } finally {
@@ -49,9 +51,7 @@ export default function EditLocation() {
     loadLocation()
   }, [id])
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-
+  async function handleSubmit(dados: Local) {
     if (!id) {
       setErrorMessage('ID do local não informado.')
       return
@@ -61,9 +61,7 @@ export default function EditLocation() {
     setIsSuccess(false)
 
     try {
-      const { error } = await updateLocation(Number(id), {
-        nome: name,
-      })
+      const { error } = await updateLocation(Number(id), dados)
 
       if (error) {
         setErrorMessage(error.message)
@@ -98,44 +96,7 @@ export default function EditLocation() {
         </p>
       )}
 
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '15px' }}>
-          <label
-            htmlFor="name"
-            style={{ display: 'block', marginBottom: '5px' }}
-          >
-            Nome do Local:
-          </label>
-
-          <input
-            id="name"
-            type="text"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            style={{
-              width: '100%',
-              padding: '8px',
-              fontSize: '16px',
-            }}
-            required
-          />
-        </div>
-
-        <button
-          type="submit"
-          style={{
-            padding: '10px 20px',
-            fontSize: '16px',
-            backgroundColor: '#007bff',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-          }}
-        >
-          Salvar Alterações
-        </button>
-      </form>
+      {local && <CadastroForm valoresIniciais={local} onSubmit={handleSubmit} />}
     </div>
   )
 }
