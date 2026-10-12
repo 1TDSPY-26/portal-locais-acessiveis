@@ -4,8 +4,10 @@ import {
   atualizarLocal as updateLocation,
   obterLocalPorId as getLocationById,
 } from '../../services/locais'
+import { useTituloDocumento } from '../../hooks/useTituloDocumento'
 
 export default function EditLocation() {
+  useTituloDocumento('Editar local')
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
 
