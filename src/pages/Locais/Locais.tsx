@@ -7,12 +7,15 @@ import ErrorMessage from '../../components/Error/ErrorMessage'
 import { EmptyState } from '../../components/EmptyState/EmptyState'
 import CampoBusca from '../../components/CampoBusca/CampoBusca'
 import FiltrosLocais from '../../components/FiltrosLocais/FiltrosLocais'
+import { useTituloDocumento } from '../../hooks/useTituloDocumento'
+
 
 function normalizar(texto: string) {
   return texto.toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
 }
 
 export default function Locais() {
+  useTituloDocumento('Locais acessíveis')
   const [locais, setLocais] = useState<Local[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
