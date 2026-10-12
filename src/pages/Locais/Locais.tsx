@@ -7,6 +7,7 @@ import ErrorMessage from '../../components/Error/ErrorMessage'
 import { EmptyState } from '../../components/EmptyState/EmptyState'
 import CampoBusca from '../../components/CampoBusca/CampoBusca'
 import FiltrosLocais from '../../components/FiltrosLocais/FiltrosLocais'
+import { useFiltrosNaUrl } from '../../hooks/useFiltrosNaUrl'
 
 function normalizar(texto: string) {
   return texto.toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -17,9 +18,15 @@ export default function Locais() {
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
   const [retryKey, setRetryKey] = useState(0)
-  const [busca, setBusca] = useState('')
-  const [categoria, setCategoria] = useState('')
-  const [recursos, setRecursos] = useState<string[]>([])
+  const {
+    busca,
+    categoria,
+    recursos,
+    setBusca,
+    setCategoria,
+    setRecursos,
+    limpar: limparFiltros,
+  } = useFiltrosNaUrl()
 
   const categorias = useMemo(
     () => [...new Set(locais.map((local) => local.categoria))].sort(),
@@ -37,12 +44,6 @@ export default function Locais() {
       recursos.every((recurso) => local.tiposAcessibilidade.includes(recurso)),
     )
   }, [locais, busca, categoria, recursos])
-
-  const limparFiltros = () => {
-    setBusca('')
-    setCategoria('')
-    setRecursos([])
-  }
 
   useEffect(() => {
     let active = true
