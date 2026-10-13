@@ -1,18 +1,29 @@
-import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import ErrorMessage from '../../components/Error/ErrorMessage'
 import { Loading } from '../../components/Loading/Loading'
-import { LocalDetail } from '../../components/LocalDetail/LocalDetail'
+import LocalDetail from '../../components/LocalDetail/LocalDetail'
 import { obterLocalPorId as getLocationById } from '../../services/locais'
 import type { Local } from '../../types/Local'
 
+type EstadoDaNavegacao = {
+  mensagem?: string
+}
+
 export default function DetalheLocalPage() {
   const { id } = useParams<{ id: string }>()
+  const location = useLocation()
+  const navigate = useNavigate()
 
   const [local, setLocal] = useState<Local | null>(null)
   const [loading, setLoading] = useState(true)
   const [erro, setErro] = useState<string | null>(null)
   const [tentativa, setTentativa] = useState(0)
+  // Guardada em estado para continuar na tela depois que o state da navegação for limpo.
+  const [avisoSucesso] = useState(
+    () => (location.state as EstadoDaNavegacao | null)?.mensagem ?? '',
+  )
+  const avisoRef = useRef<HTMLParagraphElement>(null)
 
   useEffect(() => {
     async function carregarLocal() {
@@ -49,6 +60,14 @@ export default function DetalheLocalPage() {
     carregarLocal()
   }, [id, tentativa])
 
+  // Quando a página termina de carregar, leva o foco para o aviso e limpa o state
+  // (para a mensagem não voltar a aparecer com F5).
+  useEffect(() => {
+    if (!avisoSucesso || loading || !local) return
+    avisoRef.current?.focus()
+    navigate(location.pathname, { replace: true })
+  }, [avisoSucesso, loading, local, navigate, location.pathname])
+
   if (loading) {
     return <Loading />
   }
@@ -79,6 +98,16 @@ export default function DetalheLocalPage() {
           <li className="min-w-0 break-words" aria-current="page">{local.nome}</li>
         </ol>
       </nav>
+      {avisoSucesso && (
+        <p
+          ref={avisoRef}
+          tabIndex={-1}
+          role="status"
+          className="mb-6 rounded-md bg-green-50 p-3 text-sm text-green-800 focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-blue-700"
+        >
+          <strong>Sucesso:</strong> {avisoSucesso}
+        </p>
+      )}
       <LocalDetail local={local} />
       <Link to="/locais" className="mt-6 inline-flex min-h-11 items-center text-blue-700 underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700">
         Voltar para a lista de locais

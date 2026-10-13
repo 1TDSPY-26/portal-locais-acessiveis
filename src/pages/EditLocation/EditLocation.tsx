@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import ErrorMessage from '../../components/Error/ErrorMessage'
 import { RECURSOS_ACESSIBILIDADE } from '../../constants/acessibilidade'
@@ -51,9 +51,9 @@ export default function EditLocation() {
   const [naoEncontrado, setNaoEncontrado] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
-  const [isSuccess, setIsSuccess] = useState(false)
   const [carregado, setCarregado] = useState(false)
   const [enviando, setEnviando] = useState(false)
+  const erroRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     let ativo = true
@@ -64,7 +64,6 @@ export default function EditLocation() {
       setIsLoading(true)
       setNaoEncontrado(false)
       setCarregado(false)
-      setIsSuccess(false)
       setErrorMessage('')
       try {
         if (!id) {
@@ -97,11 +96,10 @@ export default function EditLocation() {
     return () => { ativo = false }
   }, [id])
 
+  // Leva o foco para a mensagem de erro assim que ela aparece (carga ou envio).
   useEffect(() => {
-    if (!isSuccess) return
-    const temporizador = setTimeout(() => navigate('/locais'), 1500)
-    return () => clearTimeout(temporizador)
-  }, [isSuccess, navigate])
+    if (errorMessage && !isLoading) erroRef.current?.focus()
+  }, [errorMessage, isLoading])
 
   function alterarCampo(campo: keyof NovoLocal, valor: string | number | string[]) {
     setDados((anteriores) => ({ ...anteriores, [campo]: valor }))
@@ -123,7 +121,7 @@ export default function EditLocation() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (!id || !carregado || naoEncontrado || enviando || isSuccess) return
+    if (!id || !carregado || naoEncontrado || enviando) return
     setErrorMessage('')
     setEnviando(true)
     try {
@@ -136,7 +134,10 @@ export default function EditLocation() {
         setErrorMessage(error.message)
         return
       }
-      setIsSuccess(true)
+      // A confirmação é mostrada (e focada) na página de detalhe.
+      navigate(`/locais/${id}`, {
+        state: { mensagem: 'Alterações salvas com sucesso.' },
+      })
     } catch {
       setErrorMessage('Erro inesperado ao atualizar o local.')
     } finally {
@@ -149,8 +150,15 @@ export default function EditLocation() {
   return (
     <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
       <h2>Editar Local</h2>
-      {errorMessage && <ErrorMessage message={errorMessage} />}
-      {isSuccess && <p role="status" className="mt-4 text-green-800">Local atualizado com sucesso!</p>}
+      {errorMessage && (
+        <div
+          ref={erroRef}
+          tabIndex={-1}
+          className="focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-blue-700"
+        >
+          <ErrorMessage message={errorMessage} />
+        </div>
+      )}
       {naoEncontrado ? (
         <ErrorMessage message="Local não encontrado." />
       ) : carregado && (
@@ -193,7 +201,7 @@ export default function EditLocation() {
               {[1, 2, 3, 4, 5].map((nota) => <option key={nota} value={nota}>{nota}</option>)}
             </select>
           </div>
-          <button type="submit" disabled={enviando || isSuccess}
+          <button type="submit" disabled={enviando}
             className="inline-flex min-h-11 items-center rounded-md bg-blue-700 px-5 font-medium text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 disabled:opacity-60">
             {enviando ? 'Salvando...' : 'Salvar alterações'}
           </button>
