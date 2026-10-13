@@ -1,5 +1,5 @@
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   listarLocais,
   removerLocal,
@@ -34,6 +34,8 @@ export default function Locais() {
   const [excluindo, setExcluindo] = useState(false)
   const [erroExclusao, setErroExclusao] = useState('')
   const [avisoExclusao, setAvisoExclusao] = useState('')
+  const avisoExclusaoRef = useRef<HTMLParagraphElement>(null)
+  const botaoQueAbriuRef = useRef<HTMLElement | null>(null)
 
   const categorias = useMemo(
     () =>
@@ -105,10 +107,23 @@ export default function Locais() {
     }
   }, [retryKey])
 
+  // O botão "Excluir" some junto com o card: leva o foco para a confirmação.
+  useEffect(() => {
+    if (!avisoExclusao) return
+    const quadro = requestAnimationFrame(() => avisoExclusaoRef.current?.focus())
+    return () => cancelAnimationFrame(quadro)
+  }, [avisoExclusao])
+
   const loadLocais = () => {
     setIsLoading(true)
     setErrorMessage('')
     setRetryKey((key) => key + 1)
+  }
+
+  function abrirExclusao(local: Local) {
+    // Guarda quem tinha o foco para devolvê-lo se a pessoa cancelar.
+    botaoQueAbriuRef.current = document.activeElement as HTMLElement | null
+    setLocalParaExcluir(local)
   }
 
   function cancelarExclusao() {
@@ -116,6 +131,12 @@ export default function Locais() {
 
     setLocalParaExcluir(null)
     setErroExclusao('')
+
+    // requestAnimationFrame espera o <dialog> terminar de fechar;
+    // sem isso, ele pega o foco de volta.
+    requestAnimationFrame(() => {
+      botaoQueAbriuRef.current?.focus()
+    })
   }
 
   async function confirmarExclusao() {
@@ -168,9 +189,11 @@ export default function Locais() {
 
       {avisoExclusao && (
         <p
+          ref={avisoExclusaoRef}
+          tabIndex={-1}
           role="status"
           aria-live="polite"
-          className="mt-4 rounded-md bg-green-50 p-3 text-sm text-green-800"
+          className="mt-4 rounded-md bg-green-50 p-3 text-sm text-green-800 focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-blue-700"
         >
           {avisoExclusao}
         </p>
@@ -250,7 +273,7 @@ export default function Locais() {
                 <LocalCard
                   key={local.id}
                   local={local}
-                  onExcluir={setLocalParaExcluir}
+                  onExcluir={abrirExclusao}
                 />
               ))}
             </div>
