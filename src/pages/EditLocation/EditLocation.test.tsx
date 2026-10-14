@@ -1,124 +1,187 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { atualizarLocal, obterLocalPorId } from '../../services/locais'
+import type { Local } from '../../types/Local'
 import EditLocation from './EditLocation'
-import {
-  atualizarLocal,
-  obterLocalPorId,
-} from '../../services/locais'
 
-const navigateMock = vi.fn()
+vi.mock('../../services/locais')
 
-vi.mock('react-router-dom', () => ({
-  useNavigate: () => navigateMock,
-  useParams: () => ({ id: '1' }),
-}))
+const biblioteca: Local = {
+  id: 1,
+  nome: 'Biblioteca Central',
+  endereco: 'Rua A, 10',
+  categoria: 'Cultura',
+  tiposAcessibilidade: ['Rampa'],
+  descricao: 'Espaço de leitura',
+  notaAcessibilidade: 4,
+}
 
-vi.mock('../../services/locais', () => ({
-  atualizarLocal: vi.fn(),
-  obterLocalPorId: vi.fn(),
-}))
+function abrirEdicao() {
+  render(
+    <MemoryRouter initialEntries={['/locais/editar/1']}>
+      <Routes>
+        <Route
+          path="/locais/editar/:id"
+          element={<EditLocation />}
+        />
+        <Route
+          path="/locais"
+          element={<h1>Página de locais</h1>}
+        />
+        <Route
+          path="/locais/:id"
+          element={<h1>Página de detalhe</h1>}
+        />
+      </Routes>
+    </MemoryRouter>,
+  )
+}
 
 describe('EditLocation', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    vi.resetAllMocks()
 
     vi.mocked(obterLocalPorId).mockResolvedValue({
-      data: {
-        id: 1,
-        nome: 'Biblioteca Central',
-        endereco: 'Rua Principal, 100',
-        categoria: 'Biblioteca',
-        tiposAcessibilidade: ['Rampa'],
-        descricao: 'Biblioteca acessível',
-        notaAcessibilidade: 9,
-      },
+      data: biblioteca,
     })
 
     vi.mocked(atualizarLocal).mockResolvedValue({
-      data: {
-        id: 1,
-        nome: 'Biblioteca Central',
-        endereco: 'Rua Principal, 100',
-        categoria: 'Biblioteca',
-        tiposAcessibilidade: ['Rampa'],
-        descricao: 'Biblioteca acessível',
-        notaAcessibilidade: 9,
-      },
+      data: biblioteca,
     })
   })
 
-  it('carrega o nome do local no formulário', async () => {
-    render(<EditLocation />)
+  it('exibe o carregamento enquanto busca o local', () => {
+    vi.mocked(obterLocalPorId).mockReturnValue(
+      new Promise(() => { }),
+    )
 
-    const input = await screen.findByRole('textbox', {
-      name: 'Nome do Local:',
-    })
+    abrirEdicao()
 
-    expect(input).toHaveValue('Biblioteca Central')
+    expect(
+      screen.getByText(/carregando dados do local/i),
+    ).toBeInTheDocument()
+  })
+
+  it('preenche o formulário com o nome do local', async () => {
+    abrirEdicao()
+
+    expect(
+      await screen.findByLabelText(/nome do local/i),
+    ).toHaveValue('Biblioteca Central')
+  })
+
+  it('busca o local com o id da URL convertido para número', async () => {
+    abrirEdicao()
+
+    await screen.findByLabelText(/nome do local/i)
+
     expect(obterLocalPorId).toHaveBeenCalledWith(1)
   })
 
-  it('permite alterar o nome e salvar', async () => {
+  it('mostra o erro ao carregar', async () => {
+    vi.mocked(obterLocalPorId).mockResolvedValue({
+      error: {
+        message: 'Falha ao carregar',
+        status: 500,
+      },
+    })
+
+    abrirEdicao()
+
+    expect(
+      await screen.findByText('Falha ao carregar'),
+    ).toBeInTheDocument()
+  })
+
+  it('envia o nome alterado para atualizarLocal', async () => {
     const user = userEvent.setup()
 
-    render(<EditLocation />)
+    abrirEdicao()
 
-    const input = await screen.findByRole('textbox', {
-      name: 'Nome do Local:',
-    })
+    const input = await screen.findByLabelText(/nome do local/i)
 
     await user.clear(input)
     await user.type(input, 'Novo Nome')
 
     await user.click(
       screen.getByRole('button', {
-        name: 'Salvar Alterações',
+        name: /salvar alterações/i,
       }),
     )
 
     await waitFor(() => {
-      expect(atualizarLocal).toHaveBeenCalledWith(1, {
-        nome: 'Novo Nome',
-      })
+      expect(atualizarLocal).toHaveBeenCalledWith(
+        1,
+        expect.objectContaining({
+          nome: 'Novo Nome',
+        }),
+      )
     })
 
     expect(
-      screen.getByText('Local atualizado com sucesso!'),
+      await screen.findByText(/local atualizado com sucesso/i),
     ).toBeInTheDocument()
   })
 
-  it('exibe a mensagem de erro retornada pela API', async () => {
+  it('redireciona após salvar com sucesso', async () => {
     const user = userEvent.setup()
 
-    vi.mocked(atualizarLocal).mockResolvedValueOnce({
-      error: {
-        message: 'Erro ao atualizar o local',
-      },
-    })
+    abrirEdicao()
 
-    render(<EditLocation />)
-
-    const input = await screen.findByRole('textbox', {
-      name: 'Nome do Local:',
-    })
+    const input = await screen.findByLabelText(/nome do local/i)
 
     await user.clear(input)
     await user.type(input, 'Novo Nome')
 
     await user.click(
       screen.getByRole('button', {
-        name: 'Salvar Alterações',
+        name: /salvar alterações/i,
       }),
     )
 
     expect(
-      await screen.findByText('Erro ao atualizar o local'),
+      await screen.findByRole(
+        'heading',
+        { name: /página de (locais|detalhe)/i },
+        { timeout: 3000 },
+      ),
     ).toBeInTheDocument()
+  })
+
+  it('mostra o erro ao salvar e mantém o texto digitado', async () => {
+    const user = userEvent.setup()
+
+    vi.mocked(atualizarLocal).mockResolvedValueOnce({
+      error: {
+        message: 'Falha ao salvar',
+        status: 500,
+      },
+    })
+
+    abrirEdicao()
+
+    const input = await screen.findByLabelText(/nome do local/i)
+
+    await user.clear(input)
+    await user.type(input, 'Novo Nome')
+
+    await user.click(
+      screen.getByRole('button', {
+        name: /salvar alterações/i,
+      }),
+    )
 
     expect(
-      screen.queryByText('Local atualizado com sucesso!'),
+      await screen.findByText('Falha ao salvar'),
+    ).toBeInTheDocument()
+
+    expect(input).toHaveValue('Novo Nome')
+
+    expect(
+      screen.queryByText(/local atualizado com sucesso/i),
     ).not.toBeInTheDocument()
   })
 })
