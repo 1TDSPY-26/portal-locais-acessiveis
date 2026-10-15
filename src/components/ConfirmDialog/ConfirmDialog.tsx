@@ -58,7 +58,7 @@ export default function ConfirmDialog({
       ref={dialogRef}
       aria-labelledby={tituloId}
       onCancel={cancelarComEsc}
-      className="w-[calc(100%-2rem)] max-w-lg rounded-xl p-0 text-gray-900 shadow-xl backdrop:bg-black/50 open:animate-none"
+      className="m-auto w-[calc(100%-2rem)] max-w-lg rounded-xl p-0 text-gray-900 shadow-xl backdrop:bg-black/50 open:animate-none"
     >
       <div className="space-y-5 p-6">
         <div className="space-y-2">
