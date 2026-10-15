@@ -96,13 +96,6 @@ export async function atualizarLocal(
 }
 
 
-export async function removerLocal(id: number) {
-  return apiRequest<void>(`/locais/${id}`, {
-    method: 'DELETE',
-  })
-}
-
-
 export async function removerLocal(
   id: number,
 ) {
