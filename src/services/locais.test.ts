@@ -30,8 +30,6 @@ describe('listarLocais', () => {
   })
 
   it('monta a query com todos os filtros', async () => {
-    // TODO: passar categoria, acessibilidade, pagina e limite e conferir a URL completa
-    // (a ordem dos parâmetros é a mesma dos `append` em locais.ts)
     await listarLocais({
         categoria: 'Cultura',
         acessibilidade: 'Rampa',
@@ -43,7 +41,6 @@ describe('listarLocais', () => {
   })
 
   it('ignora filtros vazios', async () => {
-    // TODO: categoria '' e pagina 0 → a chamada continua sendo só '/locais'
     await listarLocais({
         categoria: '',
         pagina: 0
@@ -61,7 +58,6 @@ describe('listarLocais', () => {
   })
 
   it('devolve o resultado do apiRequest sem alterar', async () => {
-    // TODO: fazer o falso devolver um objeto e conferir que listarLocais devolve o MESMO objeto (toBe)
     const resultadoFalso = [{ id: 1, nome: 'Fiap Paulista'}]
     apiRequestFalso.mockResolvedValue(resultadoFalso as any)
 
@@ -81,7 +77,6 @@ describe('obterLocalPorId', () => {
 
 describe('criarLocal', () => {
   it('faz POST em /locais com o corpo em JSON', async () => {
-    // TODO: conferir endpoint, method 'POST' e body com JSON.stringify(novoLocal)
     await criarLocal(novoLocal)
 
     expect(apiRequestFalso).toHaveBeenCalledWith('/locais', {
@@ -105,7 +100,6 @@ describe('atualizarLocal', () => {
 
 describe('removerLocal', () => {
   it('faz DELETE em /locais/{id}', async () => {
-    // TODO: conferir '/locais/5' com method 'DELETE'
     await removerLocal(5)
 
     expect(apiRequestFalso).toHaveBeenCalledWith('/locais/5', {
