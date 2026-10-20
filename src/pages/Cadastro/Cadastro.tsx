@@ -1,8 +1,11 @@
 import { useState } from 'react'
+import { useTituloDocumento } from '../../hooks/useTituloDocumento'
 import type { Local } from '../../types/Local'
 import CadastroForm from './CadastroForm'
 
 export default function Cadastro() {
+  useTituloDocumento('Cadastrar local')
+
   const [mensagem, setMensagem] = useState('')
 
   function confirmarFormularioValido(dados: Local) {
