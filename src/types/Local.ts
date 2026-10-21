@@ -7,5 +7,3 @@ export type Local = {
   descricao: string
   notaAcessibilidade: number
 }
-
-export type NovoLocal = Omit<Local, 'id'>
