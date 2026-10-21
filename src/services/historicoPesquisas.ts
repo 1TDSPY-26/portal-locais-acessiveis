@@ -1,9 +1,28 @@
 export const CHAVE_HISTORICO = 'portal-acessivel:historico-pesquisas'
 
 export function lerHistorico(): string[] {
-  // TODO: ler a chave e converter com JSON.parse; conteúdo inválido devolve [].
-  // TODO: aceitar só lista de textos; normalizar pelas regras de adicionarPesquisa e limitar a cinco.
-  // Erro de acesso ao storage pode ser lançado: o hook trata.
+
+  try {
+    const itemDoHistorico = localStorage.getItem(CHAVE_HISTORICO);
+    if (!itemDoHistorico) return [];
+
+    const historicoConvertidoEmJSON = JSON.parse(itemDoHistorico)
+    if (!Array.isArray(historicoConvertidoEmJSON)) return [];
+
+    const apenasTextos = historicoConvertidoEmJSON.filter((item): item is string => typeof item === 'string');
+
+    let listaNormalizada: string[] = [];
+    for (const texto of apenasTextos) {
+        listaNormalizada = adicionarPesquisa(listaNormalizada, texto);
+    }
+
+    return listaNormalizada.slice(0, 5);
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+        return [];
+  }
+  throw error;
+ }
 }
 
 export function adicionarPesquisa(pesquisas: string[], texto: string): string[] {
