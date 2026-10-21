@@ -108,9 +108,14 @@ describe('apiRequest - sucesso', () => {
 })
 
 describe('apiRequest - erros', () => {
-  it.each([400, 404, 500, 503])(
+  it.each([
+    [400, 'Os dados enviados não estão corretos. Confira as informações e tente novamente.'],
+    [404, 'Não encontramos o que você procurou. Ele pode ter sido removido.'],
+    [500, 'Ocorreu um problema no servidor. Tente novamente mais tarde.'],
+    [503, 'O serviço está temporariamente indisponível. Tente novamente em alguns minutos.'],
+  ] as const)(
     'devolve erro com o status %i quando a resposta não é ok, sem ler o corpo',
-    async (status) => {
+    async (status, message) => {
       const resposta = respostaJson({ detalhe: 'falhou' }, status)
       const leituraJson = vi.spyOn(resposta, 'json')
       fetchMock.mockResolvedValue(resposta)
@@ -118,7 +123,7 @@ describe('apiRequest - erros', () => {
       const resultado = await apiRequest('/locais')
 
       expect(resultado).toEqual({
-        error: { message: 'Erro na requisição', status },
+        error: { message, status },
       })
       expect(resultado.data).toBeUndefined()
       expect(leituraJson).not.toHaveBeenCalled()
