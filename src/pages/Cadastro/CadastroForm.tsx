@@ -92,7 +92,7 @@ export default function CadastroForm({ onSubmit, enviando = false }: CadastroFor
 
       
         <div>
-          <label htmlFor="descricao" className="block font-medium">Descrição</label>
+          <label htmlFor="descricao" className="block font-medium">Descrição (obrigatório)</label>
           <textarea
             id="descricao"
             value={dados.descricao}
@@ -133,7 +133,7 @@ export default function CadastroForm({ onSubmit, enviando = false }: CadastroFor
 
       
         <div>
-          <label htmlFor="notaAcessibilidade" className="block font-medium">Nota de acessibilidade</label>
+          <label htmlFor="notaAcessibilidade" className="block font-medium">Nota de acessibilidade (obrigatório)</label>
           <select
             id="notaAcessibilidade"
             value={dados.notaAcessibilidade}
