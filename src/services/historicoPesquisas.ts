@@ -13,16 +13,16 @@ export function lerHistorico(): string[] {
 
     let listaNormalizada: string[] = [];
     for (const texto of apenasTextos) {
-        listaNormalizada = adicionarPesquisa(listaNormalizada, texto);
+      listaNormalizada = adicionarPesquisa(listaNormalizada, texto);
     }
 
     return listaNormalizada.slice(0, 5);
   } catch (error) {
     if (error instanceof SyntaxError) {
-        return [];
+      return [];
+    }
+    throw error;
   }
-  throw error;
- }
 }
 
 export function adicionarPesquisa(pesquisas: string[], texto: string): string[] {
@@ -33,4 +33,13 @@ export function adicionarPesquisa(pesquisas: string[], texto: string): string[] 
 
 export function salvarHistorico(pesquisas: string[]): boolean {
   // TODO: gravar com JSON.stringify; true se gravou, false se falhou.
+}
+
+export function limparHistorico(): boolean {
+  try {
+    localStorage.removeItem(CHAVE_HISTORICO)
+    return true
+  } catch {
+    return false
+  }
 }
