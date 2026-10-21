@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import LocalDetalhe from './LocalDetalhe'
+import DetalheLocal from './DetalheLocal'
 import { obterLocalPorId } from '../../services/locais'
 import type { Local } from '../../types/Local'
 
@@ -22,13 +22,13 @@ function renderizar(id: string) {
   render(
     <MemoryRouter initialEntries={[`/locais/${id}`]}>
       <Routes>
-        <Route path="/locais/:id" element={<LocalDetalhe />} />
+        <Route path="/locais/:id" element={<DetalheLocal />} />
       </Routes>
     </MemoryRouter>,
   )
 }
 
-describe('LocalDetalhe', () => {
+describe('DetalheLocal', () => {
   beforeEach(() => vi.clearAllMocks())
 
   it('mostra a nota "4 de 5" quando o local tem avaliação', async () => {

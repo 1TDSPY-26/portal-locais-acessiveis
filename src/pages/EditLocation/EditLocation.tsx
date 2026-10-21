@@ -373,7 +373,7 @@ export default function EditLocation() {
 
             <select
               id="notaAcessibilidade"
-              value={dados.notaAcessibilidade}
+              value={dados.notaAcessibilidade ?? 0}
               onChange={(evento) =>
                 alterarCampo(
                   'notaAcessibilidade',
@@ -389,6 +389,7 @@ export default function EditLocation() {
               }
               className={`${classeCampo} ${erros.notaAcessibilidade ? 'border-red-700' : ''}`}
             >
+              <option value={0}>Selecione</option>
               {[1, 2, 3, 4, 5].map((nota) => (
                 <option key={nota} value={nota}>
                   {nota}
