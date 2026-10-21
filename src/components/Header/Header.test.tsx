@@ -93,6 +93,11 @@ describe('Header: menu mobile', () => {
     await user.click(botaoDoMenu())
     expect(botaoDoMenu()).toHaveAttribute('aria-expanded', 'true')
 
+    // O clique deixa o foco no botão. Tira o foco dele antes do Escape,
+    // senão o teste passa mesmo se o menu parar de devolver o foco.
+    await user.tab()
+    expect(botaoDoMenu()).not.toHaveFocus()
+
     await user.keyboard('{Escape}')
 
     expect(botaoDoMenu()).toHaveAttribute('aria-expanded', 'false')
