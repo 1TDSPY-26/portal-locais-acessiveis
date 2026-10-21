@@ -3,6 +3,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import Locais from '../../pages/Locais/Locais'
 import { listarLocais } from '../../services/locais'
+import { invalidarCacheLocais } from '../../services/cacheLocais'
 
 vi.mock('../../services/locais')
 
@@ -17,6 +18,7 @@ function abrirListagem() {
 describe('QA: estados da listagem', () => {
   beforeEach(() => {
     vi.resetAllMocks()
+    invalidarCacheLocais()
   })
 
   it('lista vazia mostra estado vazio, sem erro', async () => {
