@@ -1,4 +1,3 @@
-
 import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import ErrorMessage from '../../components/Error/ErrorMessage'
@@ -13,6 +12,11 @@ import {
   validarLocal,
   type ErrosLocal,
 } from '../../utils/validarLocal'
+import {
+  CONTEXTO_CARREGAR_LOCAL,
+  CONTEXTO_SALVAR_LOCAL,
+  montarMensagemComContexto,
+} from '../../utils/mensagemComContexto'
 
 // Temporário até a #120 exportar NovoLocal: importar o tipo de ../../types/Local.
 type NovoLocal = Omit<Local, 'id'>
@@ -100,7 +104,12 @@ export default function EditLocation() {
         }
 
         if (error) {
-          setErrorMessage(error.message)
+          setErrorMessage(
+            montarMensagemComContexto(
+              CONTEXTO_CARREGAR_LOCAL,
+              error.message,
+            ),
+          )
           return
         }
 
@@ -211,7 +220,12 @@ export default function EditLocation() {
       }
 
       if (error) {
-        setErrorMessage(error.message)
+        setErrorMessage(
+          montarMensagemComContexto(
+            CONTEXTO_SALVAR_LOCAL,
+            error.message,
+          ),
+        )
         return
       }
 
