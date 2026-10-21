@@ -1,4 +1,7 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+import { mensagemPorStatus } from './mensagensErro'
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+
 export type ApiError = {
   message: string
   status?: number
@@ -32,7 +35,7 @@ export async function apiRequest<T>(
     if (!response.ok) {
       return {
         error: {
-          message: 'Erro na requisição',
+          message: mensagemPorStatus(response.status),
           status: response.status,
         },
       }
