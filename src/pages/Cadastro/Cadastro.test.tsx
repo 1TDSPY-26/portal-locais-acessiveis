@@ -39,6 +39,19 @@ describe('Cadastro integrado à API', () => {
     vi.resetAllMocks()
   })
 
+  it('impede cadastro inválido e explica o erro no primeiro campo', async () => {
+    const user = userEvent.setup()
+    render(<MemoryRouter><Cadastro /></MemoryRouter>)
+    await user.click(screen.getByRole('button', { name: /cadastrar local/i }))
+    const nome = screen.getByRole('textbox', { name: /nome do local/i })
+    expect(criarLocal).not.toHaveBeenCalled()
+    expect(nome).toHaveFocus()
+    expect(nome).toHaveAttribute('aria-invalid', 'true')
+    expect(nome).toHaveAccessibleDescription('Informe o nome do local com pelo menos 3 letras.')
+    await user.type(nome, 'Biblioteca Exemplo')
+    expect(nome).not.toHaveAttribute('aria-invalid', 'true')
+  })
+
   it('envia os dados e mostra o sucesso com link para o local', async () => {
     vi.mocked(criarLocal).mockResolvedValue({ data: museu })
 
