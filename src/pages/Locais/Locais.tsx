@@ -11,7 +11,8 @@ import FiltrosLocais from '../../components/FiltrosLocais/FiltrosLocais'
 import { useLocais } from '../../hooks/useLocais'
 import { useFiltrosNaUrl } from '../../hooks/useFiltrosNaUrl'
 import SeletorOrdenacao from '../../components/SeletorOrdenacao/SeletorOrdenacao'
-import { ordenarLocais, type CriterioOrdenacao } from '../../utils/ordenarLocais'
+import { ordenarLocais } from '../../utils/ordenarLocais'
+import { useOrdenacaoNaUrl } from '../../hooks/useOrdenacaoNaUrl'
 
 function normalizar(texto: string) {
   return texto
@@ -29,8 +30,7 @@ export default function Locais() {
     atualizadoEm,
     recarregar: loadLocais,
   } = useLocais()
-  const [ordenacao, setOrdenacao] = useState<CriterioOrdenacao>('nome-asc')
-
+  const { ordenacao, setOrdenacao } = useOrdenacaoNaUrl()
   const [localParaExcluir, setLocalParaExcluir] = useState<Local | null>(null)
   const [excluindo, setExcluindo] = useState(false)
   const [erroExclusao, setErroExclusao] = useState('')
