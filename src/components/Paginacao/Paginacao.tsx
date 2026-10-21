@@ -1,5 +1,3 @@
-import React from 'react'
-
 type PaginacaoProps = {
   paginaAtual: number
   totalPaginas: number
@@ -21,7 +19,7 @@ export default function Paginacao({ paginaAtual, totalPaginas, onMudarPagina }: 
             type="button"
             disabled={paginaAtual === 1}
             onClick={() => onMudarPagina(paginaAtual - 1)}
-            className="min-h-[44px] min-w-[44px] px-3 py-2 rounded border disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="min-h-11 min-w-11 px-3 py-2 rounded border disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700"
           >
             Anterior
           </button>
@@ -36,8 +34,8 @@ export default function Paginacao({ paginaAtual, totalPaginas, onMudarPagina }: 
                 onClick={() => onMudarPagina(numPagina)}
                 aria-label={`Página ${numPagina}`}
                 aria-current={isAtual ? 'page' : undefined}
-                className={`min-h-[44px] min-w-[44px] px-3 py-2 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  isAtual ? 'bg-blue-600 text-white font-bold' : 'bg-white text-gray-800'
+                className={`min-h-11 min-w-11 px-3 py-2 rounded border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 ${
+                  isAtual ? 'bg-blue-700 text-white font-bold' : 'bg-white text-gray-800'
                 }`}
               >
                 {numPagina}
@@ -51,7 +49,7 @@ export default function Paginacao({ paginaAtual, totalPaginas, onMudarPagina }: 
             type="button"
             disabled={paginaAtual === totalPaginas}
             onClick={() => onMudarPagina(paginaAtual + 1)}
-            className="min-h-[44px] min-w-[44px] px-3 py-2 rounded border disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="min-h-11 min-w-11 px-3 py-2 rounded border disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700"
           >
             Próxima
           </button>
