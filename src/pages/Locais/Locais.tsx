@@ -9,6 +9,7 @@ import { EmptyState } from '../../components/EmptyState/EmptyState'
 import CampoBusca from '../../components/CampoBusca/CampoBusca'
 import FiltrosLocais from '../../components/FiltrosLocais/FiltrosLocais'
 import { useLocais } from '../../hooks/useLocais'
+import { useFiltrosNaUrl } from '../../hooks/useFiltrosNaUrl'
 import SeletorOrdenacao from '../../components/SeletorOrdenacao/SeletorOrdenacao'
 import { ordenarLocais, type CriterioOrdenacao } from '../../utils/ordenarLocais'
 
@@ -62,11 +63,7 @@ export default function Locais() {
     }
   }
 
-  const [busca, setBusca] = useState('')
-  const [categoria, setCategoria] =
-    useState('')
-  const [recursos, setRecursos] =
-    useState<string[]>([])
+  const { busca, categoria, recursos, setBusca, setCategoria, setRecursos, limpar: limparFiltros } = useFiltrosNaUrl()
 
   const categorias = useMemo(
     () =>
@@ -123,12 +120,6 @@ export default function Locais() {
     () => ordenarLocais(locaisVisiveis, ordenacao),
     [locaisVisiveis, ordenacao],
   )
-
-  const limparFiltros = () => {
-    setBusca('')
-    setCategoria('')
-    setRecursos([])
-  }
 
   const horarioAtualizacao =
     atualizadoEm?.toLocaleTimeString(
