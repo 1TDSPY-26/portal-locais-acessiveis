@@ -9,6 +9,9 @@ import { EmptyState } from '../../components/EmptyState/EmptyState'
 import CampoBusca from '../../components/CampoBusca/CampoBusca'
 import FiltrosLocais from '../../components/FiltrosLocais/FiltrosLocais'
 import { useLocais } from '../../hooks/useLocais'
+import { useFiltrosNaUrl } from '../../hooks/useFiltrosNaUrl'
+import SeletorOrdenacao from '../../components/SeletorOrdenacao/SeletorOrdenacao'
+import { ordenarLocais, type CriterioOrdenacao } from '../../utils/ordenarLocais'
 
 function normalizar(texto: string) {
   return texto
@@ -26,6 +29,7 @@ export default function Locais() {
     atualizadoEm,
     recarregar: loadLocais,
   } = useLocais()
+  const [ordenacao, setOrdenacao] = useState<CriterioOrdenacao>('nome-asc')
 
   const [localParaExcluir, setLocalParaExcluir] = useState<Local | null>(null)
   const [excluindo, setExcluindo] = useState(false)
@@ -59,11 +63,7 @@ export default function Locais() {
     }
   }
 
-  const [busca, setBusca] = useState('')
-  const [categoria, setCategoria] =
-    useState('')
-  const [recursos, setRecursos] =
-    useState<string[]>([])
+  const { busca, categoria, recursos, setBusca, setCategoria, setRecursos, limpar: limparFiltros } = useFiltrosNaUrl()
 
   const categorias = useMemo(
     () =>
@@ -116,11 +116,10 @@ export default function Locais() {
     recursos,
   ])
 
-  const limparFiltros = () => {
-    setBusca('')
-    setCategoria('')
-    setRecursos([])
-  }
+  const locaisOrdenados = useMemo(
+    () => ordenarLocais(locaisVisiveis, ordenacao),
+    [locaisVisiveis, ordenacao],
+  )
 
   const horarioAtualizacao =
     atualizadoEm?.toLocaleTimeString(
@@ -182,6 +181,7 @@ export default function Locais() {
               />
 
               <div className="flex flex-wrap items-center justify-between gap-3">
+                <SeletorOrdenacao valor={ordenacao} onChange={setOrdenacao} />
                 <p
                   role="status"
                   aria-live="polite"
@@ -244,9 +244,9 @@ export default function Locais() {
           )}
 
         {!isLoading &&
-          locaisVisiveis.length > 0 && (
+          locaisOrdenados.length > 0 && (
             <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {locaisVisiveis.map(
+              {locaisOrdenados.map(
                 (local) => (
                   <LocalCard
                     key={local.id}
