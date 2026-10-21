@@ -3,11 +3,14 @@ type EmptyStateProps = {
 }
 
 export function EmptyState({
-  message = "Nenhum item encontrado.",
+  message = 'Nenhum item encontrado.',
 }: EmptyStateProps) {
   return (
-    <div role="status" aria-live="polite">
-      <p>{message}</p>
+    <div
+      role="status"
+      className="mt-6 rounded-md border border-gray-200 p-8 text-center"
+    >
+      <p className="text-base text-gray-700">{message}</p>
     </div>
   )
 }
