@@ -38,6 +38,10 @@ describe('CampoBusca', () => {
 
     const campo = screen.getByLabelText('Buscar por nome')
 
+    expect(
+      screen.queryByRole('button', { name: 'Limpar busca' }),
+    ).not.toBeInTheDocument()
+
     await user.type(campo, 'parque')
 
     expect(
@@ -59,5 +63,8 @@ describe('CampoBusca', () => {
 
     expect(campo).toHaveValue('')
     expect(campo).toHaveFocus()
+    expect(
+      screen.queryByRole('button', { name: 'Limpar busca' }),
+    ).not.toBeInTheDocument()
   })
 })

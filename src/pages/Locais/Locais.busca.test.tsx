@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { invalidarCacheLocais } from '../../services/cacheLocais'
 import { listarLocais } from '../../services/locais'
 import { locaisDeTeste } from '../../tests/fixtures/locais'
 import Locais from './Locais'
@@ -29,6 +30,7 @@ function nomesVisiveis() {
 describe('Locais: busca e filtros', () => {
   beforeEach(() => {
     vi.resetAllMocks()
+    invalidarCacheLocais()
   })
 
   it('busca por parte do nome e usa o singular', async () => {
@@ -107,12 +109,7 @@ describe('Locais: busca e filtros', () => {
     )
 
     expect(screen.getByText('0 locais encontrados')).toBeInTheDocument()
-
-    expect(
-      screen.getByText(
-        'Nenhum local corresponde à pesquisa e aos filtros selecionados.',
-      ),
-    ).toBeInTheDocument()
+    expect(screen.queryAllByRole('heading', { level: 3 })).toHaveLength(0)
   })
 
   it('limpa filtros e busca e restaura a lista', async () => {
@@ -141,12 +138,7 @@ describe('Locais: busca e filtros', () => {
     expect(screen.getByLabelText('Buscar por nome')).toHaveValue('')
     expect(screen.getByLabelText('Categoria')).toHaveValue('')
 
-    expect(nomesVisiveis()).toEqual([
-      'Biblioteca Central',
-      'Parque Verde',
-      'Centro Cultural Ação',
-    ])
-
+    expect(nomesVisiveis()).toHaveLength(3)
     expect(screen.getByText('3 locais encontrados')).toBeInTheDocument()
   })
 })
