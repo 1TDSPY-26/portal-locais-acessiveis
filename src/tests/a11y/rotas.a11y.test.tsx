@@ -82,5 +82,8 @@ describe('Auditoria automática de acessibilidade', () => {
     await auditarAcessibilidade(container)
   })
 
-  it.todo('o detalhe não tem violações (#119)')
+  it('o detalhe não tem violações', async () => {
+    const container = await abrirRota('/locais/1', /Biblioteca Central/)
+    await auditarAcessibilidade(container)
+  })
 })
