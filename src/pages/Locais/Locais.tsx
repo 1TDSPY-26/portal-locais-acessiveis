@@ -13,7 +13,7 @@ import { useFiltrosNaUrl } from '../../hooks/useFiltrosNaUrl'
 import SeletorOrdenacao from '../../components/SeletorOrdenacao/SeletorOrdenacao'
 import { ordenarLocais, type CriterioOrdenacao } from '../../utils/ordenarLocais'
 
-function descreverFiltrosAtivos(busca: string, categoria: string, recursos: string[]) {
+function descreverFiltrosAtivos(busca: string, categoria: string, recursos: string[]): string {
   const partes: string[] = []
 
   if (busca.trim()) partes.push(`busca "${busca.trim()}"`)
@@ -253,6 +253,7 @@ export default function Locais() {
           )}
 
         {!isLoading &&
+          !errorMessage &&
           locais.length > 0 &&
           locaisVisiveis.length === 0 && (
             <EmptyState
