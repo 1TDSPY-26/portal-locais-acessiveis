@@ -11,15 +11,18 @@
   }
 }
 
+/* aumentar o tamanho base da fonte */
 html[data-fonte="grande"] {
   font-size: 112.5%;
 }
 
+/* fundo preto, texto branco e bordas brancas no body, header, footer e main */
 html[data-contraste="alto"] {
   background-color: black;
   color: white;
 }
 
+/* deixa as principais áreas da página com fundo preto e texto branco */
 html[data-contraste="alto"] body,
 html[data-contraste="alto"] header,
 html[data-contraste="alto"] footer,
@@ -29,12 +32,14 @@ html[data-contraste="alto"] main {
   border-color: white;
 }
 
+/* links no alto contraste: amarelo (ffeb3b) e sublinhados */
 html[data-contraste="alto"] a {
-  color: yellow;
+  color: #ffeb3b;
   text-decoration: underline;
 }
 
+/* foco visível no alto contraste: contorno amarelo de 3px */
 html[data-contraste="alto"] :focus-visible {
-  outline: 3px solid yellow;
+  outline: 3px solid #ffeb3b;
   outline-offset: 2px;
 }

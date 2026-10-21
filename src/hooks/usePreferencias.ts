@@ -3,24 +3,23 @@ import {
   aplicarPreferencias,
   lerPreferencias,
   salvarPreferencias,
+  type Preferencias,
 } from "../services/preferencias";
-import type { Preferencias } from "../types/Preferenciais";
 
 export function usePreferencias() {
-  //pega as preferencias que ja estao salvas
+  //comeca usando as preferencias que ja estao salvas no navegador
   const [preferencias, setPreferencias] =
     useState<Preferencias>(lerPreferencias());
 
   useEffect(() => {
-    // aplica as preferencias na pagin
+    // aplica as mudanças na pag.
     aplicarPreferencias(preferencias);
 
-    //salva as preferencias no navegador
+    // salva a mudanca
     salvarPreferencias(preferencias);
   }, [preferencias]);
 
   function alternarTextoGrande() {
-    // muda o texto para grande
     setPreferencias({
       ...preferencias,
       textoGrande: !preferencias.textoGrande,
@@ -28,7 +27,6 @@ export function usePreferencias() {
   }
 
   function alternarAltoContraste() {
-    // muda para o alto contraste
     setPreferencias({
       ...preferencias,
       altoContraste: !preferencias.altoContraste,

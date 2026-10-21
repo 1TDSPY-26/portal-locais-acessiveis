@@ -1,4 +1,4 @@
-import PreferenciasAcessibilidade from "../../components/UsePreferencias/UsePreferencias";
+import PreferenciasAcessibilidade from "../../components/PreferenciasAcessibilidade/PreferenciasAcessibilidade";
 
 export default function Acessibilidade() {
   return (
@@ -31,10 +31,13 @@ export default function Acessibilidade() {
         </p>
       </section>
 
-      <section aria-labelledby="preferencias-leitura" className="mt-8">
-        <h2 id="preferencias-leitura" className="text-xl font-semibold">
+      <section aria-labelledby="preferencias" className="mt-8">
+        <h2 id="preferencias" className="text-xl font-semibold">
           Preferências de leitura
         </h2>
+        <p className="mt-2 leading-relaxed">
+          Escolha as opções que facilitam a leitura da página.
+        </p>
 
         <PreferenciasAcessibilidade />
       </section>

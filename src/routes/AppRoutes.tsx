@@ -7,6 +7,7 @@ import Home from "../pages/Home/Home";
 import Locais from "../pages/Locais/Locais";
 import Sobre from "../pages/Sobre/Sobre";
 import Acessibilidade from "../pages/Acessibilidade/Acessibilidade";
+import Cadastro from "../pages/Cadastro/Cadastro";
 
 export default function AppRoutes() {
   return (
@@ -20,7 +21,7 @@ export default function AppRoutes() {
 
           <Route path="/locais/:id" element={<h1>Detalhe do Local</h1>} />
 
-          <Route path="/cadastro" element={<h1>Cadastro</h1>} />
+          <Route path="/cadastro" element={<Cadastro />} />
           <Route path="/cadastrar" element={<Navigate to="/cadastro" replace />} />
           <Route path="/sobre" element={<Sobre />} />
           <Route path="/acessibilidade" element={<Acessibilidade />} />
