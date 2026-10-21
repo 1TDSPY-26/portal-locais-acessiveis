@@ -1,0 +1,65 @@
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { MemoryRouter } from 'react-router-dom'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { apiRequest } from '../../services/api'
+import { invalidarCacheLocais, lerCache } from '../../services/cacheLocais'
+import Locais from './Locais'
+
+vi.mock('../../services/api')
+const api = vi.mocked(apiRequest)
+const local = {
+  id: 1, nome: 'Biblioteca Central', endereco: 'Rua A, 10', categoria: 'Cultura',
+  descricao: 'Espaço de leitura', tiposAcessibilidade: ['Rampa'], notaAcessibilidade: 4,
+}
+
+beforeEach(() => {
+  vi.resetAllMocks()
+  invalidarCacheLocais()
+  api.mockResolvedValue({ data: [local] })
+})
+
+async function abrirListagem() {
+  render(<MemoryRouter><Locais /></MemoryRouter>)
+  await screen.findByRole('heading', { name: local.nome })
+  return userEvent.setup()
+}
+
+describe('Integração da exclusão com o cache', () => {
+  it('recarrega a lista e atualiza o cache após excluir', async () => {
+    const user = await abrirListagem()
+    api.mockResolvedValueOnce({ data: undefined }).mockResolvedValueOnce({ data: [] })
+    await user.click(screen.getByRole('button', { name: `Excluir ${local.nome}` }))
+    expect(api).toHaveBeenCalledTimes(1)
+    await user.click(screen.getByRole('button', { name: 'Excluir local' }))
+
+    expect(api).toHaveBeenCalledWith('/locais/1', { method: 'DELETE' })
+    await waitFor(() => expect(screen.queryByRole('heading', { name: local.nome })).not.toBeInTheDocument())
+    expect(screen.getByText(`Local "${local.nome}" excluído.`)).toBeInTheDocument()
+    expect(lerCache()?.dados).toEqual([])
+  })
+
+  it('cancelar e Esc mantêm o card e não chamam a exclusão', async () => {
+    const user = await abrirListagem()
+    await user.click(screen.getByRole('button', { name: `Excluir ${local.nome}` }))
+    await user.click(screen.getByRole('button', { name: 'Cancelar' }))
+    await user.click(screen.getByRole('button', { name: `Excluir ${local.nome}` }))
+    fireEvent(screen.getByRole('dialog'), new Event('cancel', { cancelable: true }))
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: local.nome })).toBeInTheDocument()
+    expect(api).toHaveBeenCalledTimes(1)
+  })
+
+  it('falha na exclusão mantém o card, o cache e o diálogo com erro', async () => {
+    const user = await abrirListagem()
+    api.mockResolvedValueOnce({ error: { message: 'Falha na exclusão', status: 500 } })
+    await user.click(screen.getByRole('button', { name: `Excluir ${local.nome}` }))
+    await user.click(screen.getByRole('button', { name: 'Excluir local' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Falha na exclusão')
+    expect(screen.getByRole('dialog')).toHaveAttribute('open')
+    expect(screen.getByRole('heading', { name: local.nome })).toBeInTheDocument()
+    expect(lerCache()?.dados).toEqual([local])
+  })
+})
