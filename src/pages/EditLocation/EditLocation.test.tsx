@@ -184,4 +184,17 @@ describe('EditLocation', () => {
       screen.queryByText(/local atualizado com sucesso/i),
     ).not.toBeInTheDocument()
   })
+
+  it('impede salvar um campo inválido e foca o primeiro erro', async () => {
+    const user = userEvent.setup()
+    abrirEdicao()
+    const nome = await screen.findByLabelText(/nome do local/i)
+    await user.clear(nome)
+    await user.click(screen.getByRole('button', { name: /salvar alterações/i }))
+
+    expect(atualizarLocal).not.toHaveBeenCalled()
+    expect(nome).toHaveAttribute('aria-invalid', 'true')
+    expect(nome).toHaveFocus()
+    expect(nome).toHaveAccessibleDescription('Informe o nome do local com pelo menos 3 letras.')
+  })
 })
