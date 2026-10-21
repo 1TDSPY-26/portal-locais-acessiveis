@@ -1,26 +1,70 @@
-import type { Local } from "../../types/Local";
+import type { Local } from '../../types/Local'
 
-type Props = {
-  local: Local;
-};
+type LocalDetailProps = {
+  local: Local
+}
 
-export default function LocalDetail({ local }: Props) {
+export default function LocalDetail({ local }: LocalDetailProps) {
+  const semRecursos = local.tiposAcessibilidade.length === 0
+
   return (
-    <section className="local-detalhe">
-      <h2>{local.nome}</h2>
+    <article className="min-w-0 break-words">
+      <p className="text-sm font-medium uppercase tracking-wide text-gray-600">
+        {local.categoria}
+      </p>
 
-      <p><strong>Endereço:</strong> {local.endereco}</p>
-      <p><strong>Categoria:</strong> {local.categoria}</p>
-      <p><strong>Descrição:</strong> {local.descricao}</p>
+      <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">
+        {local.nome}
+      </h1>
 
-      <div>
-        <strong>Acessibilidade:</strong>
-        <ul>
-          {local.tiposAcessibilidade.map((tipo) => (
-            <li key={tipo}>{tipo}</li>
-          ))}
-        </ul>
-      </div>
-    </section>
-  );
+      <dl className="mt-6 space-y-4">
+        <div>
+          <dt className="font-semibold text-gray-900">Endereço</dt>
+          <dd className="mt-1 text-gray-800">{local.endereco}</dd>
+        </div>
+
+        <div>
+          <dt className="font-semibold text-gray-900">
+            Nota de acessibilidade
+          </dt>
+          <dd className="mt-1 text-gray-800">
+            {local.notaAcessibilidade} de 5
+          </dd>
+        </div>
+      </dl>
+
+      <section aria-labelledby="titulo-descricao" className="mt-8">
+        <h2 id="titulo-descricao" className="text-xl font-semibold">
+          Descrição
+        </h2>
+
+        <p className="mt-2 leading-relaxed text-gray-800">
+          {local.descricao}
+        </p>
+      </section>
+
+      <section aria-labelledby="titulo-recursos" className="mt-8">
+        <h2 id="titulo-recursos" className="text-xl font-semibold">
+          Recursos de acessibilidade
+        </h2>
+
+        {semRecursos ? (
+          <p className="mt-2 text-gray-700">
+            Nenhum recurso de acessibilidade informado.
+          </p>
+        ) : (
+          <ul className="mt-3 flex flex-wrap gap-2">
+            {local.tiposAcessibilidade.map((tipo) => (
+              <li
+                key={tipo}
+                className="rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-800"
+              >
+                {tipo}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    </article>
+  )
 }
