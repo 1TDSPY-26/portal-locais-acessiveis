@@ -1,10 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { apiRequest } from './api'
+import { invalidarCacheLocais } from './cacheLocais'
 import { atualizarLocal, criarLocal, listarLocais, obterLocalPorId, removerLocal } from './locais'
 
 vi.mock('./api', () => ({
   apiRequest: vi.fn(),
 }))
+vi.mock('./cacheLocais')
 
 const apiRequestFalso = vi.mocked(apiRequest)
 
@@ -19,6 +21,7 @@ const novoLocal = {
 
 beforeEach(() => {
   apiRequestFalso.mockReset()
+  vi.mocked(invalidarCacheLocais).mockClear()
   apiRequestFalso.mockResolvedValue({ data: undefined })
 })
 
@@ -105,5 +108,25 @@ describe('removerLocal', () => {
     expect(apiRequestFalso).toHaveBeenCalledWith('/locais/5', {
         method: 'DELETE'
     })
+  })
+})
+
+describe('Invalidação do cache nas escritas', () => {
+  const operacoes = [
+    ['cadastro', () => criarLocal(novoLocal)],
+    ['edição', () => atualizarLocal(5, { nome: 'Nome atualizado' })],
+    ['exclusão', () => removerLocal(5)],
+  ] as const
+
+  it.each(operacoes)('%s invalida o cache após sucesso', async (_nome, executar) => {
+    await executar()
+    expect(invalidarCacheLocais).toHaveBeenCalledTimes(1)
+  })
+
+  it.each(operacoes)('%s mantém o cache quando a API falha', async (_nome, executar) => {
+    const erro = { error: { message: 'Falha na escrita', status: 500 } }
+    apiRequestFalso.mockResolvedValueOnce(erro)
+    expect(await executar()).toBe(erro)
+    expect(invalidarCacheLocais).not.toHaveBeenCalled()
   })
 })
