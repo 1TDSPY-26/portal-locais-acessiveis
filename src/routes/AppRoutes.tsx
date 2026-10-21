@@ -4,10 +4,11 @@ import EditLocation from "../pages/EditLocation/EditLocation";
 import NotFound from "../pages/NotFound/NotFound";
 import ErrorBoundary from "../components/Error/ErrorBoundary";
 import Home from "../pages/Home/Home";
-import DetalheLocalPage from "../pages/DetalheLocal/DetalheLocal";
 import Locais from "../pages/Locais/Locais";
 import Sobre from "../pages/Sobre/Sobre";
 import Acessibilidade from "../pages/Acessibilidade/Acessibilidade";
+import Cadastro from "../pages/Cadastro/Cadastro";
+import DetalheLocal from "../pages/DetalheLocal/DetalheLocal";
 
 export default function AppRoutes() {
   return (
@@ -19,9 +20,9 @@ export default function AppRoutes() {
 
           <Route path="/locais/editar/:id" element={<EditLocation />} />
 
-          <Route path="/locais/:id" element={<DetalheLocalPage />} />
+          <Route path="/locais/:id" element={<DetalheLocal />} />
 
-          <Route path="/cadastro" element={<h1>Cadastro</h1>} />
+          <Route path="/cadastro" element={<Cadastro />} />
           <Route path="/cadastrar" element={<Navigate to="/cadastro" replace />} />
           <Route path="/sobre" element={<Sobre />} />
           <Route path="/acessibilidade" element={<Acessibilidade />} />
