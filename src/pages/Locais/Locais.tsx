@@ -1,17 +1,17 @@
-
 import { useEffect, useMemo, useRef, useState } from 'react'
-import {
-  listarLocais,
-  removerLocal,
-} from '../../services/locais'
-import type { Local } from '../../types/Local'
 import LocalCard from '../../components/LocalCard/LocalCard'
 import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog'
+import { removerLocal } from '../../services/locais'
+import type { Local } from '../../types/Local'
 import { Loading } from '../../components/Loading/Loading'
 import ErrorMessage from '../../components/Error/ErrorMessage'
 import { EmptyState } from '../../components/EmptyState/EmptyState'
 import CampoBusca from '../../components/CampoBusca/CampoBusca'
 import FiltrosLocais from '../../components/FiltrosLocais/FiltrosLocais'
+import { useLocais } from '../../hooks/useLocais'
+import { useFiltrosNaUrl } from '../../hooks/useFiltrosNaUrl'
+import SeletorOrdenacao from '../../components/SeletorOrdenacao/SeletorOrdenacao'
+import { ordenarLocais, type CriterioOrdenacao } from '../../utils/ordenarLocais'
 
 function normalizar(texto: string) {
   return texto
@@ -21,91 +21,22 @@ function normalizar(texto: string) {
 }
 
 export default function Locais() {
-  const [locais, setLocais] = useState<Local[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [errorMessage, setErrorMessage] = useState('')
-  const [retryKey, setRetryKey] = useState(0)
-  const [busca, setBusca] = useState('')
-  const [categoria, setCategoria] = useState('')
-  const [recursos, setRecursos] = useState<string[]>([])
+  const {
+    locais,
+    isLoading,
+    revalidando,
+    errorMessage,
+    atualizadoEm,
+    recarregar: loadLocais,
+  } = useLocais()
+  const [ordenacao, setOrdenacao] = useState<CriterioOrdenacao>('nome-asc')
 
-  const [localParaExcluir, setLocalParaExcluir] =
-    useState<Local | null>(null)
+  const [localParaExcluir, setLocalParaExcluir] = useState<Local | null>(null)
   const [excluindo, setExcluindo] = useState(false)
   const [erroExclusao, setErroExclusao] = useState('')
   const [avisoExclusao, setAvisoExclusao] = useState('')
   const avisoExclusaoRef = useRef<HTMLParagraphElement>(null)
   const botaoQueAbriuRef = useRef<HTMLElement | null>(null)
-
-  const categorias = useMemo(
-    () =>
-      [...new Set(
-        locais.map((local) => local.categoria),
-      )].sort(),
-    [locais],
-  )
-
-  const recursosDisponiveis = useMemo(
-    () =>
-      [...new Set(
-        locais.flatMap(
-          (local) => local.tiposAcessibilidade,
-        ),
-      )].sort(),
-    [locais],
-  )
-
-  const locaisVisiveis = useMemo(() => {
-    const texto = normalizar(busca.trim())
-
-    return locais.filter(
-      (local) =>
-        (!texto ||
-          normalizar(local.nome).includes(texto)) &&
-        (!categoria ||
-          local.categoria === categoria) &&
-        recursos.every((recurso) =>
-          local.tiposAcessibilidade.includes(recurso),
-        ),
-    )
-  }, [locais, busca, categoria, recursos])
-
-  const limparFiltros = () => {
-    setBusca('')
-    setCategoria('')
-    setRecursos([])
-  }
-
-  useEffect(() => {
-    let active = true
-
-    listarLocais()
-      .then(({ data, error }) => {
-        if (!active) return
-
-        if (error) {
-          setErrorMessage(error.message)
-        } else {
-          setLocais(data ?? [])
-        }
-      })
-      .catch(() => {
-        if (active) {
-          setErrorMessage(
-            'Erro inesperado ao carregar os locais.',
-          )
-        }
-      })
-      .finally(() => {
-        if (active) {
-          setIsLoading(false)
-        }
-      })
-
-    return () => {
-      active = false
-    }
-  }, [retryKey])
 
   // O botão "Excluir" some junto com o card: leva o foco para a confirmação.
   useEffect(() => {
@@ -113,12 +44,6 @@ export default function Locais() {
     const quadro = requestAnimationFrame(() => avisoExclusaoRef.current?.focus())
     return () => cancelAnimationFrame(quadro)
   }, [avisoExclusao])
-
-  const loadLocais = () => {
-    setIsLoading(true)
-    setErrorMessage('')
-    setRetryKey((key) => key + 1)
-  }
 
   function abrirExclusao(local: Local) {
     // Guarda quem tinha o foco para devolvê-lo se a pessoa cancelar.
@@ -128,7 +53,6 @@ export default function Locais() {
 
   function cancelarExclusao() {
     if (excluindo) return
-
     setLocalParaExcluir(null)
     setErroExclusao('')
 
@@ -141,45 +65,91 @@ export default function Locais() {
 
   async function confirmarExclusao() {
     if (!localParaExcluir || excluindo) return
-
     setExcluindo(true)
     setErroExclusao('')
     setAvisoExclusao('')
-
     try {
-      const { error } = await removerLocal(
-        localParaExcluir.id,
-      )
-
+      const { error } = await removerLocal(localParaExcluir.id)
       if (error) {
-        setErroExclusao(
-          error.message ||
-            'Não foi possível excluir este local.',
-        )
+        setErroExclusao(error.message || 'Não foi possível excluir este local.')
         return
       }
-
-      const nomeLocal = localParaExcluir.nome
-      const idLocal = localParaExcluir.id
-
-      setLocais((atuais) =>
-        atuais.filter((local) => local.id !== idLocal),
-      )
-
-      setAvisoExclusao(
-        `Local "${nomeLocal}" excluído.`,
-      )
-
+      setAvisoExclusao(`Local "${localParaExcluir.nome}" excluído.`)
       setLocalParaExcluir(null)
-      setErroExclusao('')
+      loadLocais()
     } catch {
-      setErroExclusao(
-        'Erro inesperado ao excluir o local.',
-      )
+      setErroExclusao('Erro inesperado ao excluir o local.')
     } finally {
       setExcluindo(false)
     }
   }
+
+  const { busca, categoria, recursos, setBusca, setCategoria, setRecursos, limpar: limparFiltros } = useFiltrosNaUrl()
+
+  const categorias = useMemo(
+    () =>
+      [
+        ...new Set(
+          locais.map(
+            (local) => local.categoria,
+          ),
+        ),
+      ].sort(),
+    [locais],
+  )
+
+  const recursosDisponiveis = useMemo(
+    () =>
+      [
+        ...new Set(
+          locais.flatMap(
+            (local) =>
+              local.tiposAcessibilidade,
+          ),
+        ),
+      ].sort(),
+    [locais],
+  )
+
+  const locaisVisiveis = useMemo(() => {
+    const texto = normalizar(
+      busca.trim(),
+    )
+
+    return locais.filter(
+      (local) =>
+        (!texto ||
+          normalizar(
+            local.nome,
+          ).includes(texto)) &&
+        (!categoria ||
+          local.categoria === categoria) &&
+        recursos.every((recurso) =>
+          local.tiposAcessibilidade.includes(
+            recurso,
+          ),
+        ),
+    )
+  }, [
+    locais,
+    busca,
+    categoria,
+    recursos,
+  ])
+
+  const locaisOrdenados = useMemo(
+    () => ordenarLocais(locaisVisiveis, ordenacao),
+    [locaisVisiveis, ordenacao],
+  )
+
+  const horarioAtualizacao =
+    atualizadoEm?.toLocaleTimeString(
+      'pt-BR',
+      {
+        hour: '2-digit',
+        minute: '2-digit',
+      },
+    )
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-16">
@@ -211,7 +181,6 @@ export default function Locais() {
         </h2>
 
         {!isLoading &&
-          !errorMessage &&
           locais.length > 0 && (
             <div className="space-y-4">
               <CampoBusca
@@ -221,61 +190,98 @@ export default function Locais() {
 
               <FiltrosLocais
                 categorias={categorias}
-                recursosDisponiveis={recursosDisponiveis}
+                recursosDisponiveis={
+                  recursosDisponiveis
+                }
                 categoria={categoria}
                 recursos={recursos}
-                buscaAtiva={busca.trim().length > 0}
-                onCategoriaChange={setCategoria}
-                onRecursosChange={setRecursos}
+                buscaAtiva={
+                  busca.trim().length > 0
+                }
+                onCategoriaChange={
+                  setCategoria
+                }
+                onRecursosChange={
+                  setRecursos
+                }
                 onLimpar={limparFiltros}
               />
 
-              <p role="status" aria-live="polite">
-                {locaisVisiveis.length}{' '}
-                {locaisVisiveis.length === 1
-                  ? 'local encontrado'
-                  : 'locais encontrados'}
-              </p>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <SeletorOrdenacao valor={ordenacao} onChange={setOrdenacao} />
+                <p
+                  role="status"
+                  aria-live="polite"
+                >
+                  {locaisVisiveis.length}{' '}
+                  {locaisVisiveis.length === 1
+                    ? 'local encontrado'
+                    : 'locais encontrados'}
+                </p>
+
+                <div className="flex flex-wrap items-center gap-3">
+                  {atualizadoEm && (
+                    <span>
+                      Atualizado às{' '}
+                      {horarioAtualizacao}
+                    </span>
+                  )}
+
+                  {revalidando && (
+                    <span role="status">
+                      Atualizando...
+                    </span>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={loadLocais}
+                    disabled={revalidando}
+                    className="min-h-11 rounded-md border px-4 py-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Atualizar lista
+                  </button>
+                </div>
+              </div>
             </div>
           )}
 
         {isLoading && <Loading />}
 
-        {!isLoading && errorMessage && (
-          <ErrorMessage
-            message={errorMessage}
-            onRetry={loadLocais}
-          />
-        )}
+        {!isLoading &&
+          errorMessage && (
+            <div className="mt-6">
+              <ErrorMessage
+                message={errorMessage}
+                onRetry={loadLocais}
+              />
+            </div>
+          )}
 
         {!isLoading &&
           !errorMessage &&
           locais.length === 0 && (
-            <EmptyState
-              message="Nenhum local cadastrado até o momento."
-            />
+            <EmptyState message="Nenhum local cadastrado até o momento." />
           )}
 
         {!isLoading &&
-          !errorMessage &&
           locais.length > 0 &&
           locaisVisiveis.length === 0 && (
-            <EmptyState
-              message="Nenhum local corresponde à pesquisa e aos filtros selecionados."
-            />
+            <EmptyState message="Nenhum local corresponde à pesquisa e aos filtros selecionados." />
           )}
 
         {!isLoading &&
-          !errorMessage &&
-          locaisVisiveis.length > 0 && (
+          locaisOrdenados.length > 0 && (
             <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {locaisVisiveis.map((local) => (
-                <LocalCard
-                  key={local.id}
-                  local={local}
-                  onExcluir={abrirExclusao}
-                />
-              ))}
+              {locaisOrdenados.map(
+                (local) => (
+                  <LocalCard
+                    key={local.id}
+                    local={local}
+                    onExcluir={abrirExclusao}
+                  />
+                ),
+              )}
             </div>
           )}
       </section>
@@ -283,15 +289,9 @@ export default function Locais() {
       <ConfirmDialog
         aberto={localParaExcluir !== null}
         titulo="Confirmar exclusão"
-        mensagem={
-          localParaExcluir && (
-            <p>
-              Tem certeza de que deseja excluir o local{' '}
-              <strong>{localParaExcluir.nome}</strong>?
-              {' '}Esta ação não pode ser desfeita.
-            </p>
-          )
-        }
+        mensagem={localParaExcluir && (
+          <p>Tem certeza de que deseja excluir o local <strong>{localParaExcluir.nome}</strong>? Esta ação não pode ser desfeita.</p>
+        )}
         textoConfirmar="Excluir local"
         carregando={excluindo}
         erro={erroExclusao}

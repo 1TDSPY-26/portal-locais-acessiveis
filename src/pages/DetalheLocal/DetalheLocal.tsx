@@ -3,22 +3,33 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import ErrorMessage from '../../components/Error/ErrorMessage'
 import { Loading } from '../../components/Loading/Loading'
 import LocalDetail from '../../components/LocalDetail/LocalDetail'
-import { obterLocalPorId as getLocationById } from '../../services/locais'
+import { obterLocalPorId } from '../../services/locais'
 import type { Local } from '../../types/Local'
+
+const MENSAGEM_ID_INVALIDO = 'Endereço inválido: o identificador do local precisa ser um número.'
+const MENSAGEM_NAO_ENCONTRADO = 'Local não encontrado.'
+
+const classeLink =
+  'inline-flex min-h-11 items-center font-medium text-blue-700 underline hover:text-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700'
 
 type EstadoDaNavegacao = {
   mensagem?: string
 }
 
-export default function DetalheLocalPage() {
-  const { id } = useParams<{ id: string }>()
+function ehIdValido(id: number) {
+  return Number.isInteger(id) && id > 0
+}
+
+export default function DetalheLocal() {
+  const { id } = useParams()
   const location = useLocation()
   const navigate = useNavigate()
+  const idLocal = Number(id)
+  const idValido = ehIdValido(idLocal)
 
   const [local, setLocal] = useState<Local | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [erro, setErro] = useState<string | null>(null)
-  const [tentativa, setTentativa] = useState(0)
+  const [isLoading, setIsLoading] = useState(idValido)
+  const [errorMessage, setErrorMessage] = useState(idValido ? '' : MENSAGEM_ID_INVALIDO)
   // Guardada em estado para continuar na tela depois que o state da navegação for limpo.
   const [avisoSucesso] = useState(
     () => (location.state as EstadoDaNavegacao | null)?.mensagem ?? '',
@@ -26,79 +37,43 @@ export default function DetalheLocalPage() {
   const avisoRef = useRef<HTMLParagraphElement>(null)
 
   useEffect(() => {
-    async function carregarLocal() {
-      if (!id) {
-        setErro('ID do local não informado.')
-        setLoading(false)
-        return
-      }
+    if (!idValido) return
+    let active = true
 
-      try {
-        setLoading(true)
-        setErro(null)
-
-        const { data, error } = await getLocationById(Number(id))
-
+    obterLocalPorId(idLocal)
+      .then(({ data, error }) => {
+        if (!active) return
         if (error) {
-          setErro(error.message || 'Erro ao carregar o local.')
+          setErrorMessage(error.status === 404 ? MENSAGEM_NAO_ENCONTRADO : error.message)
           return
         }
+        if (data) setLocal(data)
+      })
+      .catch(() => {
+        if (active) setErrorMessage('Erro inesperado ao carregar o local.')
+      })
+      .finally(() => {
+        if (active) setIsLoading(false)
+      })
 
-        if (!data) {
-          setErro('Local não encontrado.')
-          return
-        }
-
-        setLocal(data)
-      } catch {
-        setErro('Erro inesperado ao carregar as informações do local.')
-      } finally {
-        setLoading(false)
-      }
+    return () => {
+      active = false
     }
-
-    carregarLocal()
-  }, [id, tentativa])
+  }, [idLocal, idValido])
 
   // Quando a página termina de carregar, leva o foco para o aviso e limpa o state
   // (para a mensagem não voltar a aparecer com F5).
   useEffect(() => {
-    if (!avisoSucesso || loading || !local) return
+    if (!avisoSucesso || isLoading || !local) return
     avisoRef.current?.focus()
     navigate(location.pathname, { replace: true })
-  }, [avisoSucesso, loading, local, navigate, location.pathname])
+  }, [avisoSucesso, isLoading, local, navigate, location.pathname])
 
-  if (loading) {
-    return <Loading />
-  }
-
-  if (erro || !local) {
-    return (
-      <div tabIndex={-1} aria-live="polite" className="container mx-auto p-4">
-        <ErrorMessage
-          message={erro || 'Local não encontrado.'}
-          onRetry={() => setTentativa((prev) => prev + 1)}
-        />
-        <Link
-          to="/locais"
-          className="mt-4 inline-flex min-h-11 items-center text-blue-700 underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700"
-        >
-          Voltar para a lista
-        </Link>
-      </div>
-    )
-  }
+  if (isLoading) return <Loading message="Carregando informações do local..." />
 
   return (
-    <div className="container mx-auto min-w-0 p-4">
-      <nav aria-label="Caminho de navegação" className="mb-6">
-        <ol className="flex flex-wrap gap-x-2 break-words text-sm">
-          <li><Link to="/" className="text-blue-700 underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">Início</Link><span aria-hidden="true"> / </span></li>
-          <li><Link to="/locais" className="text-blue-700 underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">Locais</Link><span aria-hidden="true"> / </span></li>
-          <li className="min-w-0 break-words" aria-current="page">{local.nome}</li>
-        </ol>
-      </nav>
-      {avisoSucesso && (
+    <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+      {avisoSucesso && local && (
         <p
           ref={avisoRef}
           tabIndex={-1}
@@ -108,10 +83,24 @@ export default function DetalheLocalPage() {
           <strong>Sucesso:</strong> {avisoSucesso}
         </p>
       )}
-      <LocalDetail local={local} />
-      <Link to="/locais" className="mt-6 inline-flex min-h-11 items-center text-blue-700 underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700">
-        Voltar para a lista de locais
-      </Link>
+
+      {local ? (
+        <LocalDetail local={local} />
+      ) : (
+        <ErrorMessage message={errorMessage || MENSAGEM_NAO_ENCONTRADO} />
+      )}
+
+      <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2">
+        <Link to="/locais" className={classeLink}>
+          Voltar para a lista de locais
+        </Link>
+
+        {local && (
+          <Link to={`/locais/editar/${local.id}`} className={classeLink}>
+            Editar local<span className="sr-only"> {local.nome}</span>
+          </Link>
+        )}
+      </div>
     </div>
   )
 }
