@@ -26,6 +26,21 @@ async function abrirListagem() {
 }
 
 describe('Integração da exclusão com o cache', () => {
+  it('mantém a ordenação e a ação de excluir ao atualizar a lista', async () => {
+    const arena = { ...local, id: 2, nome: 'Arena Acessível' }
+    api.mockResolvedValueOnce({ data: [local, arena] })
+    const user = await abrirListagem()
+    await user.selectOptions(screen.getByLabelText('Ordenar por'), 'nome-desc')
+    expect(screen.getAllByRole('heading', { level: 3 }).map((item) => item.textContent))
+      .toEqual([local.nome, arena.nome])
+    api.mockResolvedValueOnce({ data: undefined }).mockResolvedValueOnce({ data: [arena] })
+    await user.click(screen.getByRole('button', { name: `Excluir ${local.nome}` }))
+    await user.click(screen.getByRole('button', { name: 'Excluir local' }))
+    await waitFor(() => expect(screen.queryByRole('heading', { name: local.nome })).not.toBeInTheDocument())
+    expect(screen.getByLabelText('Ordenar por')).toHaveValue('nome-desc')
+    expect(lerCache()?.dados).toEqual([arena])
+  })
+
   it('recarrega a lista e atualiza o cache após excluir', async () => {
     const user = await abrirListagem()
     api.mockResolvedValueOnce({ data: undefined }).mockResolvedValueOnce({ data: [] })
