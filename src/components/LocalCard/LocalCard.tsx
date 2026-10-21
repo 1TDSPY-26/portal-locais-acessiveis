@@ -43,6 +43,7 @@ export default function LocalCard({
       <div className="flex items-center justify-between gap-4">
         <Link
           to={`/locais/${local.id}`}
+          aria-label={`Ver detalhes de ${local.nome}`}
           className="inline-flex min-h-11 items-center text-sm font-medium text-blue-700 underline hover:text-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700"
         >
           Ver detalhes
@@ -52,6 +53,7 @@ export default function LocalCard({
         {onExcluir && (
           <button
             type="button"
+            aria-label={`Excluir ${local.nome}`}
             onClick={() => onExcluir(local)}
             className="inline-flex min-h-11 items-center text-sm font-medium text-red-700 underline hover:text-red-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700"
           >
