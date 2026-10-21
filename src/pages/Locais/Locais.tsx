@@ -1,5 +1,8 @@
 import { useMemo, useState } from 'react'
 import LocalCard from '../../components/LocalCard/LocalCard'
+import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog'
+import { removerLocal } from '../../services/locais'
+import type { Local } from '../../types/Local'
 import { Loading } from '../../components/Loading/Loading'
 import ErrorMessage from '../../components/Error/ErrorMessage'
 import { EmptyState } from '../../components/EmptyState/EmptyState'
@@ -23,6 +26,38 @@ export default function Locais() {
     atualizadoEm,
     recarregar: loadLocais,
   } = useLocais()
+
+  const [localParaExcluir, setLocalParaExcluir] = useState<Local | null>(null)
+  const [excluindo, setExcluindo] = useState(false)
+  const [erroExclusao, setErroExclusao] = useState('')
+  const [avisoExclusao, setAvisoExclusao] = useState('')
+
+  function cancelarExclusao() {
+    if (excluindo) return
+    setLocalParaExcluir(null)
+    setErroExclusao('')
+  }
+
+  async function confirmarExclusao() {
+    if (!localParaExcluir || excluindo) return
+    setExcluindo(true)
+    setErroExclusao('')
+    setAvisoExclusao('')
+    try {
+      const { error } = await removerLocal(localParaExcluir.id)
+      if (error) {
+        setErroExclusao(error.message || 'Não foi possível excluir este local.')
+        return
+      }
+      setAvisoExclusao(`Local "${localParaExcluir.nome}" excluído.`)
+      setLocalParaExcluir(null)
+      loadLocais()
+    } catch {
+      setErroExclusao('Erro inesperado ao excluir o local.')
+    } finally {
+      setExcluindo(false)
+    }
+  }
 
   const [busca, setBusca] = useState('')
   const [categoria, setCategoria] =
@@ -101,6 +136,12 @@ export default function Locais() {
       <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
         Locais acessíveis
       </h1>
+
+      {avisoExclusao && (
+        <p role="status" aria-live="polite" className="mt-4 rounded-md bg-green-50 p-3 text-sm text-green-800">
+          {avisoExclusao}
+        </p>
+      )}
 
       <section
         aria-labelledby="lista-locais"
@@ -210,12 +251,26 @@ export default function Locais() {
                   <LocalCard
                     key={local.id}
                     local={local}
+                    onExcluir={setLocalParaExcluir}
                   />
                 ),
               )}
             </div>
           )}
       </section>
+
+      <ConfirmDialog
+        aberto={localParaExcluir !== null}
+        titulo="Confirmar exclusão"
+        mensagem={localParaExcluir && (
+          <p>Tem certeza de que deseja excluir o local <strong>{localParaExcluir.nome}</strong>? Esta ação não pode ser desfeita.</p>
+        )}
+        textoConfirmar="Excluir local"
+        carregando={excluindo}
+        erro={erroExclusao}
+        onConfirmar={confirmarExclusao}
+        onCancelar={cancelarExclusao}
+      />
     </div>
   )
 }
