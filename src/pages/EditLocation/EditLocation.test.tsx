@@ -61,8 +61,8 @@ describe('EditLocation', () => {
     abrirEdicao()
 
     expect(
-      screen.getByText(/carregando dados do local/i),
-    ).toBeInTheDocument()
+      screen.getByRole('status'),
+    ).toHaveTextContent('Carregando dados do local...')
   })
 
   it('preenche o formulário com o nome do local', async () => {
@@ -71,6 +71,11 @@ describe('EditLocation', () => {
     expect(
       await screen.findByLabelText(/nome do local/i),
     ).toHaveValue('Biblioteca Central')
+
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1)
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Editar local' }),
+    ).toBeInTheDocument()
   })
 
   it('busca o local com o id da URL convertido para número', async () => {
@@ -92,8 +97,8 @@ describe('EditLocation', () => {
     abrirEdicao()
 
     expect(
-      await screen.findByText('Falha ao carregar'),
-    ).toBeInTheDocument()
+      await screen.findByRole('alert'),
+    ).toHaveTextContent(/^Erro:.*Falha ao carregar/)
   })
 
   it('envia o nome alterado para atualizarLocal', async () => {
@@ -122,8 +127,8 @@ describe('EditLocation', () => {
     })
 
     expect(
-      await screen.findByText(/local atualizado com sucesso/i),
-    ).toBeInTheDocument()
+      await screen.findByRole('status'),
+    ).toHaveTextContent('Sucesso: local atualizado com sucesso!')
   })
 
   it('redireciona após salvar com sucesso', async () => {
@@ -145,7 +150,7 @@ describe('EditLocation', () => {
     expect(
       await screen.findByRole(
         'heading',
-        { name: /página de (locais|detalhe)/i },
+        { name: /página de locais/i },
         { timeout: 3000 },
       ),
     ).toBeInTheDocument()
@@ -175,8 +180,8 @@ describe('EditLocation', () => {
     )
 
     expect(
-      await screen.findByText('Falha ao salvar'),
-    ).toBeInTheDocument()
+      await screen.findByRole('alert'),
+    ).toHaveTextContent(/^Erro:.*Falha ao salvar/)
 
     expect(input).toHaveValue('Novo Nome')
 
