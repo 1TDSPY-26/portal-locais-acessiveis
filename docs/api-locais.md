@@ -64,9 +64,11 @@ Exemplo **ilustrativo** de resposta JSON para `GET /locais`, compatível com
 
 `apiRequest` devolve `{ data }` após sucesso ou `{ error: { message, status? } }`
 em falhas. Uma resposta HTTP não bem-sucedida gera `"Erro na requisição"`
-com o status; falha de rede gera `"Erro de conexão com a API"`; tempo esgotado
-gera `"Tempo limite da requisição excedido"`. A resposta HTTP 204 é tratada
-como sucesso sem dados. A mensagem detalhada enviada pelo servidor não é lida.
+com o status. Quando não há resposta do servidor, a mensagem é definida por
+`mensagemPorFalha`: falha de conexão usa `MENSAGEM_SEM_CONEXAO`, tempo esgotado
+usa `MENSAGEM_TEMPO_ESGOTADO` e resposta que não é JSON usa
+`MENSAGEM_RESPOSTA_INVALIDA`. A resposta HTTP 204 é tratada como sucesso sem
+dados. A mensagem detalhada enviada pelo servidor não é lida.
 
 Antes de integrar cadastro e realizar QA completo, confirmar com a equipe do
 backend a URL-base, os métodos, a obrigatoriedade e faixa dos campos, os
