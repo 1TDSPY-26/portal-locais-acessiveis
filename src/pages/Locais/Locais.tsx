@@ -75,8 +75,7 @@ export default function Locais() {
     }
   }
 
-  const { busca, categoria, setBusca, setCategoria} = useFiltrosNaUrl()
-  const [recursos, setRecursos] = useState<string[]>([])
+  const { busca, categoria, recursos, setBusca, setCategoria, setRecursos, limpar } = useFiltrosNaUrl()
   const { estado, posicao, solicitarLocalizacao } = useGeolocalizacao()
   const [proximidadeLigada, setProximidadeLigada] = useState(false)
   const posicaoDoFiltro = proximidadeLigada ? posicao : null
@@ -116,11 +115,7 @@ export default function Locais() {
     )
   }, [locais, busca, categoria, recursos, posicaoDoFiltro])
 
-  const limparFiltros = () => {
-    setBusca('')
-    setCategoria('')
-    setRecursos([])
-  }
+  const limparFiltros = limpar
 
   // Cada novo pedido desliga o filtro: a pessoa marca de novo quando a nova posição chegar.
   const usarMinhaLocalizacao = () => {

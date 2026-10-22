@@ -3,9 +3,9 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Local } from '../../types/Local'
-import type { Coordenadas } from '../../services/coordenadasLocais'
+import type { Coordenadas } from '../../services/coordenadasLocais.ts'
 import { listarLocais } from '../../services/locais'
-import { obterCoordenadasDoLocal } from '../../services/coordenadasLocais'
+import { obterCoordenadasDoLocal } from '../../services/coordenadasLocais.ts'
 import Locais from './Locais'
 
 // O vi.mock é içado para o topo: as fábricas só criam funções vazias, e o beforeEach diz o que elas devolvem.
