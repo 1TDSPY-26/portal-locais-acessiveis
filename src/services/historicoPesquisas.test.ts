@@ -4,7 +4,7 @@ import { CHAVE_HISTORICO, lerHistorico } from './historicoPesquisas';
 describe('lerHistorico', () => {
     beforeEach(() => {
         localStorage.clear();
-        vi.resetAllMocks();
+        vi.restoreAllMocks();
     });
 
     it('Retorna uma lista vazia se não tiver um histórico', () => {
@@ -22,8 +22,8 @@ describe('lerHistorico', () => {
     });
 
     it('Retorna a lista de pesquisas salvas do histórico devidamente formatada e sem repetições', () => {
-        localStorage.setItem(CHAVE_HISTORICO, JSON.stringify(['Biblioteca', 'Museu', 'biblioteca']));
-        expect(lerHistorico()).toEqual(['Museu', 'biblioteca']);
+        localStorage.setItem(CHAVE_HISTORICO, JSON.stringify(['biblioteca', 'Museu', 'biblioteca']));
+        expect(lerHistorico()).toEqual(['biblioteca', 'Museu']);
     });
 
     it('Lança excessão de erro caso o armazenamento local esteja inacessivel', () => {

@@ -6,7 +6,7 @@ export function lerHistorico(): string[] {
     const itemDoHistorico = localStorage.getItem(CHAVE_HISTORICO);
     if (!itemDoHistorico) return [];
 
-    const historicoConvertidoEmJSON = JSON.parse(itemDoHistorico)
+    const historicoConvertidoEmJSON = JSON.parse(itemDoHistorico);
     if (!Array.isArray(historicoConvertidoEmJSON)) return [];
 
     const apenasTextos = historicoConvertidoEmJSON.filter((item): item is string => typeof item === 'string');
@@ -26,9 +26,16 @@ export function lerHistorico(): string[] {
 }
 
 export function adicionarPesquisa(pesquisas: string[], texto: string): string[] {
-  // TODO: aparar espaços; texto vazio devolve a lista sem mudança.
-  // TODO: tirar a repetição sem diferenciar maiúsculas (pt-BR).
-  // TODO: pôr o texto no início e limitar a cinco. Não gravar nada aqui.
+
+  const textoFormatado = texto.trim();
+  if (!textoFormatado) return pesquisas;
+
+  const textoEmMinusculo = textoFormatado.toLocaleLowerCase('pt-BR');
+
+  const historicoSemDuplicadas = pesquisas.filter(
+    (item) => item.trim().toLocaleLowerCase('pt-BR') !== textoEmMinusculo
+  );
+  return [textoFormatado, ...historicoSemDuplicadas].slice(0, 5);
 }
 
 export function salvarHistorico(pesquisas: string[]): boolean {
