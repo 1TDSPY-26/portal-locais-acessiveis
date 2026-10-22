@@ -1,3 +1,4 @@
+import { mensagemPorFalha } from './mensagensFalha'
 import { mensagemPorStatus } from './mensagensErro'
 
 const API_URL = import.meta.env.VITE_API_URL
@@ -53,17 +54,9 @@ export async function apiRequest<T>(
       data,
     }
   } catch (error) {
-    if (error instanceof Error && error.name === 'AbortError') {
-      return {
-        error: {
-          message: 'Tempo limite da requisição excedido',
-        },
-      }
-    }
-
     return {
       error: {
-        message: 'Erro de conexão com a API',
+        message: mensagemPorFalha(error),
       },
     }
   } finally {
