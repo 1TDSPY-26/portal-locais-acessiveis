@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import ErrorMessage from '../../components/Error/ErrorMessage'
 import { Loading } from '../../components/Loading/Loading'
 import LocalDetail from '../../components/LocalDetail/LocalDetail'
@@ -12,18 +12,29 @@ const MENSAGEM_NAO_ENCONTRADO = 'Local não encontrado.'
 const classeLink =
   'inline-flex min-h-11 items-center font-medium text-blue-700 underline hover:text-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700'
 
+type EstadoDaNavegacao = {
+  mensagem?: string
+}
+
 function ehIdValido(id: number) {
   return Number.isInteger(id) && id > 0
 }
 
 export default function DetalheLocal() {
   const { id } = useParams()
+  const location = useLocation()
+  const navigate = useNavigate()
   const idLocal = Number(id)
   const idValido = ehIdValido(idLocal)
 
   const [local, setLocal] = useState<Local | null>(null)
   const [isLoading, setIsLoading] = useState(idValido)
   const [errorMessage, setErrorMessage] = useState(idValido ? '' : MENSAGEM_ID_INVALIDO)
+  // Guardada em estado para continuar na tela depois que o state da navegação for limpo.
+  const [avisoSucesso] = useState(
+    () => (location.state as EstadoDaNavegacao | null)?.mensagem ?? '',
+  )
+  const avisoRef = useRef<HTMLParagraphElement>(null)
 
   useEffect(() => {
     if (!idValido) return
@@ -50,10 +61,29 @@ export default function DetalheLocal() {
     }
   }, [idLocal, idValido])
 
+  // Quando a página termina de carregar, leva o foco para o aviso e limpa o state
+  // (para a mensagem não voltar a aparecer com F5).
+  useEffect(() => {
+    if (!avisoSucesso || isLoading || !local) return
+    avisoRef.current?.focus()
+    navigate(location.pathname, { replace: true })
+  }, [avisoSucesso, isLoading, local, navigate, location.pathname])
+
   if (isLoading) return <Loading message="Carregando informações do local..." />
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+      {avisoSucesso && local && (
+        <p
+          ref={avisoRef}
+          tabIndex={-1}
+          role="status"
+          className="mb-6 rounded-md bg-green-50 p-3 text-sm text-green-800 focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-blue-700"
+        >
+          <strong>Sucesso:</strong> {avisoSucesso}
+        </p>
+      )}
+
       {local ? (
         <LocalDetail local={local} />
       ) : (
