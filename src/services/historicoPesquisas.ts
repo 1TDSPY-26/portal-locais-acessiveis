@@ -39,5 +39,11 @@ export function adicionarPesquisa(pesquisas: string[], texto: string): string[] 
 }
 
 export function salvarHistorico(pesquisas: string[]): boolean {
-  // TODO: gravar com JSON.stringify; true se gravou, false se falhou.
+
+  try {
+    localStorage.setItem(CHAVE_HISTORICO, JSON.stringify(pesquisas));
+    return true;
+  } catch {
+    return false;
+  }
 }
