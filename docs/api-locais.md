@@ -41,7 +41,7 @@ em tempo de execução.
 | `categoria` | `string` | `"Biblioteca"` | Categoria usada pelo filtro |
 | `tiposAcessibilidade` | `string[]` | `["Rampa de acesso"]` | Recursos de acessibilidade declarados |
 | `descricao` | `string` | `"Espaço de leitura"` | Descrição do local |
-| `notaAcessibilidade` | `number` | `4` | Nota numérica, sem faixa documentada no contrato atual |
+| `notaAcessibilidade` | `number \| null` | `4` | Nota de 1 a 5; `null` quando o local ainda não foi avaliado |
 
 Exemplo **ilustrativo** de resposta JSON para `GET /locais`, compatível com
 `Local[]`:
