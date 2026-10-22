@@ -33,3 +33,4 @@ describe('lerHistorico', () => {
         expect(() => lerHistorico()).toThrow('Acesso negado!');
     });
 });
+
