@@ -13,6 +13,18 @@ A URL-base vem de `VITE_API_URL`. O valor em [`.env.example`](../.env.example)
 Sem uma URL real configurada, consultas e cadastros não podem ser validados de
 ponta a ponta. A variável do Vite é pública no navegador: não incluir segredos.
 
+Quando `VITE_API_URL` não existe ou está vazia, a função `resolverApiUrl`
+(`src/services/api.ts`) usa `http://localhost:3000` e, só no `npm run dev`,
+mostra um aviso no console explicando que falta criar o `.env.local`. Espaços
+nas pontas e a barra final são removidos, para não gerar `//locais`.
+
+| `VITE_API_URL` | URL usada |
+| --- | --- |
+| não existe | `http://localhost:3000` + aviso no console |
+| `""` ou `"   "` | `http://localhost:3000` + aviso no console |
+| `"https://api.site.com/"` | `https://api.site.com` |
+| `"https://api.site.com"` | `https://api.site.com` |
+
 ## Operações usadas pelo frontend
 
 | Função | Método e caminho | Entrada | Tipo de retorno no frontend |
