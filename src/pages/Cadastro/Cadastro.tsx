@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { criarLocal } from '../../services/locais'
 import type { Local } from '../../types/Local'
@@ -22,6 +22,20 @@ export default function Cadastro() {
   const [errorMessage, setErrorMessage] = useState('')
   const [localCriado, setLocalCriado] = useState<Local | null>(null)
   const [versaoFormulario, setVersaoFormulario] = useState(0)
+  const sucessoRef = useRef<HTMLParagraphElement>(null)
+  const erroRef = useRef<HTMLParagraphElement>(null)
+
+  useEffect(() => {
+    if (!localCriado) return
+
+    sucessoRef.current?.focus()
+  }, [localCriado])
+
+  useEffect(() => {
+    if (!errorMessage) return
+
+    erroRef.current?.focus()
+  }, [errorMessage])
 
   async function cadastrar(dados: NovoLocal) {
     if (enviando) return
@@ -54,14 +68,24 @@ export default function Cadastro() {
         Cadastrar novo local
       </h1>
 
-    {errorMessage && (
-        <p role="alert" className="mt-4 rounded-md border border-red-300 bg-red-50 p-3 text-red-800">
+      {errorMessage && (
+        <p
+          ref={erroRef}
+          tabIndex={-1}
+          role="alert"
+          className="mt-4 rounded-md border border-red-300 bg-red-50 p-3 text-red-800 focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-blue-700"
+        >
           <strong>Erro:</strong> {errorMessage}
         </p>
       )}
 
       {localCriado && (
-        <p role="status" className="mt-4 rounded-md border border-green-700 bg-green-50 p-3 text-green-900">
+        <p
+          ref={sucessoRef}
+          tabIndex={-1}
+          role="status"
+          className="mt-4 rounded-md border border-green-700 bg-green-50 p-3 text-green-900 focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-blue-700"
+        >
           <strong>Sucesso:</strong> "{localCriado.nome}" foi cadastrado.{' '}
           <Link to={`/locais/${localCriado.id}`} className="underline">
             Ver local cadastrado
