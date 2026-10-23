@@ -1,5 +1,7 @@
+
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import Breadcrumb from '../../components/Breadcrumb/Breadcrumb'
 import ErrorMessage from '../../components/Error/ErrorMessage'
 import { Loading } from '../../components/Loading/Loading'
 import LocalDetail from '../../components/LocalDetail/LocalDetail'
@@ -23,23 +25,34 @@ export default function DetalheLocal() {
 
   const [local, setLocal] = useState<Local | null>(null)
   const [isLoading, setIsLoading] = useState(idValido)
-  const [errorMessage, setErrorMessage] = useState(idValido ? '' : MENSAGEM_ID_INVALIDO)
+  const [errorMessage, setErrorMessage] = useState(
+    idValido ? '' : MENSAGEM_ID_INVALIDO
+  )
 
   useEffect(() => {
     if (!idValido) return
+
     let active = true
 
     obterLocalPorId(idLocal)
       .then(({ data, error }) => {
         if (!active) return
+
         if (error) {
-          setErrorMessage(error.status === 404 ? MENSAGEM_NAO_ENCONTRADO : error.message)
+          setErrorMessage(
+            error.status === 404
+              ? MENSAGEM_NAO_ENCONTRADO
+              : error.message
+          )
           return
         }
+
         if (data) setLocal(data)
       })
       .catch(() => {
-        if (active) setErrorMessage('Erro inesperado ao carregar o local.')
+        if (active) {
+          setErrorMessage('Erro inesperado ao carregar o local.')
+        }
       })
       .finally(() => {
         if (active) setIsLoading(false)
@@ -50,14 +63,28 @@ export default function DetalheLocal() {
     }
   }, [idLocal, idValido])
 
-  if (isLoading) return <Loading message="Carregando informações do local..." />
+  if (isLoading) {
+    return <Loading message="Carregando informações do local..." />
+  }
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+      {local && (
+        <Breadcrumb
+          itens={[
+            { rotulo: 'Início', para: '/' },
+            { rotulo: 'Locais', para: '/locais' },
+            { rotulo: local.nome },
+          ]}
+        />
+      )}
+
       {local ? (
         <LocalDetail local={local} />
       ) : (
-        <ErrorMessage message={errorMessage || MENSAGEM_NAO_ENCONTRADO} />
+        <ErrorMessage
+          message={errorMessage || MENSAGEM_NAO_ENCONTRADO}
+        />
       )}
 
       <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2">
@@ -66,8 +93,12 @@ export default function DetalheLocal() {
         </Link>
 
         {local && (
-          <Link to={`/locais/editar/${local.id}`} className={classeLink}>
-            Editar local<span className="sr-only"> {local.nome}</span>
+          <Link
+            to={`/locais/editar/${local.id}`}
+            className={classeLink}
+          >
+            Editar local
+            <span className="sr-only"> {local.nome}</span>
           </Link>
         )}
       </div>

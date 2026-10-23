@@ -13,6 +13,7 @@ import {
   validarLocal,
   type ErrosLocal,
 } from '../../utils/validarLocal'
+import Breadcrumb from '../../components/Breadcrumb/Breadcrumb'
 
 // Temporário até a #120 exportar NovoLocal: importar o tipo de ../../types/Local.
 type NovoLocal = Omit<Local, 'id'>
@@ -54,6 +55,7 @@ export default function EditLocation() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [dados, setDados] = useState<NovoLocal>(LOCAL_VAZIO)
+  const [nomeOriginal, setNomeOriginal] = useState('')
   const [naoEncontrado, setNaoEncontrado] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
@@ -80,6 +82,7 @@ export default function EditLocation() {
       setIsLoading(true)
       setNaoEncontrado(false)
       setCarregado(false)
+      setNomeOriginal('')
       setIsSuccess(false)
       setErrorMessage('')
       setErros({})
@@ -110,6 +113,7 @@ export default function EditLocation() {
         }
 
         setDados(separarDadosEditaveis(data))
+        setNomeOriginal(data.nome)
         setCarregado(true)
       } catch {
         if (ativo) {
@@ -227,6 +231,16 @@ export default function EditLocation() {
 
   return (
     <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
+      {carregado && nomeOriginal !== '' && (
+        <Breadcrumb
+          itens={[
+            { rotulo: 'Início', para: '/' },
+            { rotulo: 'Locais', para: '/locais' },
+            { rotulo: nomeOriginal, para: `/locais/${id}` },
+            { rotulo: 'Editar' },
+          ]}
+        />
+      )}
       <h2>Editar Local</h2>
 
       {errorMessage && <ErrorMessage message={errorMessage} />}
