@@ -7,6 +7,8 @@ import ErrorMessage from '../../components/Error/ErrorMessage'
 import { EmptyState } from '../../components/EmptyState/EmptyState'
 import CampoBusca from '../../components/CampoBusca/CampoBusca'
 import FiltrosLocais from '../../components/FiltrosLocais/FiltrosLocais'
+import HistoricoPesquisas from '../../components/HistoricoPesquisas/HistoricoPesquisas'
+import { useHistoricoPesquisas } from '../../hooks/useHistoricoPesquisas'
 
 function normalizar(texto: string) {
   return texto.toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -20,6 +22,7 @@ export default function Locais() {
   const [busca, setBusca] = useState('')
   const [categoria, setCategoria] = useState('')
   const [recursos, setRecursos] = useState<string[]>([])
+  const historico = useHistoricoPesquisas()
 
   const categorias = useMemo(
     () => [...new Set(locais.map((local) => local.categoria))].sort(),
@@ -42,6 +45,11 @@ export default function Locais() {
     setBusca('')
     setCategoria('')
     setRecursos([])
+  }
+
+  function selecionarPesquisa(texto: string) {
+    setBusca(texto)
+    historico.registrar(texto)
   }
 
   useEffect(() => {
@@ -80,7 +88,20 @@ export default function Locais() {
 
         {!isLoading && !errorMessage && locais.length > 0 && (
           <div className="space-y-4">
-            <CampoBusca valor={busca} onChange={setBusca} />
+            <CampoBusca
+              valor={busca}
+              onChange={setBusca}
+              onPesquisar={historico.registrar}
+            />
+            <HistoricoPesquisas
+              pesquisas={historico.pesquisas}
+              onSelecionar={selecionarPesquisa}
+            />
+            {historico.erroPersistencia && (
+              <p role="alert" className="text-sm font-medium text-red-800">
+                Erro: {historico.erroPersistencia}
+              </p>
+            )}
             <FiltrosLocais
               categorias={categorias}
               recursosDisponiveis={recursosDisponiveis}
