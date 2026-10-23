@@ -46,6 +46,8 @@ const ERRO_SALVAR =
   'Erro: Não foi possivel salvar o histórico neste navegador. Você pode continuar pesquisando.'
 const ERRO_CARREGAR =
   'Erro: Não foi possivel carregar o histórico neste navegador. Você pode continuar pesquisando.'
+const ERRO_LIMPAR =
+  'Erro: Não foi possível apagar o histórico neste navegador. Tente novamente.'
 
 async function renderizarLocais() {
   render(
@@ -61,6 +63,9 @@ function botoesDoHistorico() {
   if (!container) return []
   return within(container)
     .getAllByRole('button')
+    .filter(
+      (botao) => botao.textContent !== 'Limpar histórico de pesquisas',
+    )
     .map((botao) => botao.textContent)
 }
 
@@ -132,7 +137,9 @@ describe('Locais com histórico de pesquisas', () => {
     await user.click(screen.getByRole('checkbox', { name: 'Rampa' }))
 
     const containerHistorico = screen.getByLabelText('Histórico de pesquisas')
-    await user.click(within(containerHistorico).getByRole('button', { name: 'Biblioteca' }))
+    await user.click(
+      within(containerHistorico).getByRole('button', { name: 'Biblioteca' }),
+    )
 
     expect(campo).toHaveValue('Biblioteca')
     expect(screen.getByLabelText('Categoria')).toHaveValue('Cultura')
@@ -142,7 +149,10 @@ describe('Locais com histórico de pesquisas', () => {
   })
 
   it('ao recarregar a página, restaura os itens salvos', async () => {
-    localStorage.setItem(CHAVE_HISTORICO, JSON.stringify(['Museu', 'Biblioteca']))
+    localStorage.setItem(
+      CHAVE_HISTORICO,
+      JSON.stringify(['Museu', 'Biblioteca']),
+    )
 
     await renderizarLocais()
 
@@ -197,5 +207,60 @@ describe('Locais com histórico de pesquisas', () => {
 
     await user.type(campo, 'museu')
     expect(nomesVisiveis()).toEqual(['Museu da Cidade'])
+  })
+
+  it('limpa o histórico, mantém a busca e devolve o foco ao campo', async () => {
+    const user = userEvent.setup()
+    const campo = await renderizarLocais()
+
+    await user.type(campo, 'Museu{Enter}')
+
+    expect(botoesDoHistorico()).toEqual(['Museu'])
+
+    const botaoLimpar = screen.getByRole('button', {
+      name: 'Limpar histórico de pesquisas',
+    })
+
+    await user.click(botaoLimpar)
+
+    expect(botoesDoHistorico()).toEqual([])
+    expect(localStorage.getItem(CHAVE_HISTORICO)).toBeNull()
+
+    expect(campo).toHaveValue('Museu')
+    expect(campo).toHaveFocus()
+
+    expect(
+      screen.getByText('Sucesso: Histórico de pesquisas apagado.'),
+    ).toHaveAttribute('role', 'status')
+  })
+
+  it('mantém o histórico e mostra erro quando não consegue apagá-lo', async () => {
+    const user = userEvent.setup()
+    const campo = await renderizarLocais()
+
+    await user.type(campo, 'Museu{Enter}')
+
+    vi.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => {
+      throw new Error('acesso bloqueado')
+    })
+
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Limpar histórico de pesquisas',
+      }),
+    )
+
+    expect(botoesDoHistorico()).toEqual(['Museu'])
+
+    expect(
+      screen.getByRole('button', {
+        name: 'Limpar histórico de pesquisas',
+      }),
+    ).toBeInTheDocument()
+
+    const aviso = screen.getByRole('alert')
+
+    expect(aviso).toHaveTextContent(ERRO_LIMPAR)
+    expect(aviso.textContent?.split('Erro:')).toHaveLength(2)
   })
 })

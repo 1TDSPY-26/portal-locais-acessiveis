@@ -1,11 +1,13 @@
 export type HistoricoPesquisasProps = {
   pesquisas: string[];
   onSelecionar: (texto: string) => void;
+  onLimpar?: () => void;
 };
 
 export default function HistoricoPesquisas({
   pesquisas,
   onSelecionar,
+  onLimpar,
 }: HistoricoPesquisasProps){
   if (pesquisas.length === 0) return null;
 
@@ -16,6 +18,15 @@ export default function HistoricoPesquisas({
           {item}
         </button>
       ))}
+      {onLimpar && (
+        <button
+          type='button'
+          onClick={onLimpar}
+          className='min-h-[44px] min-w-[44px] px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded text-sm focus-visible:outline focus-visible:outline-2'
+        >
+          Limpar histórico de pesquisas
+        </button>
+      )}
     </div>
   );
 }

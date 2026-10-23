@@ -10,6 +10,9 @@ import FiltrosLocais from '../../components/FiltrosLocais/FiltrosLocais'
 import HistoricoPesquisas from '../../components/HistoricoPesquisas/HistoricoPesquisas'
 import { useHistoricoPesquisas } from '../../hooks/useHistoricoPesquisas'
 
+const MENSAGEM_HISTORICO_APAGADO =
+  'Sucesso: Histórico de pesquisas apagado.'
+
 function normalizar(texto: string) {
   return texto.toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
 }
@@ -22,6 +25,7 @@ export default function Locais() {
   const [busca, setBusca] = useState('')
   const [categoria, setCategoria] = useState('')
   const [recursos, setRecursos] = useState<string[]>([])
+  const [mensagemHistorico, setMensagemHistorico] = useState('')
   const historico = useHistoricoPesquisas()
 
   const categorias = useMemo(
@@ -50,6 +54,18 @@ export default function Locais() {
   function selecionarPesquisa(texto: string) {
     setBusca(texto)
     historico.registrar(texto)
+  }
+
+  function limparHistoricoPesquisas() {
+    const apagou = historico.limpar()
+
+    if (!apagou) {
+      setMensagemHistorico('')
+      return
+    }
+
+    setMensagemHistorico(MENSAGEM_HISTORICO_APAGADO)
+    document.getElementById('busca')?.focus()
   }
 
   useEffect(() => {
@@ -96,7 +112,11 @@ export default function Locais() {
             <HistoricoPesquisas
               pesquisas={historico.pesquisas}
               onSelecionar={selecionarPesquisa}
+              onLimpar={limparHistoricoPesquisas}
             />
+            <p role="status" aria-live="polite">
+              {mensagemHistorico}
+            </p>
             {historico.erroPersistencia && (
               <p role="alert" className="text-sm font-medium text-red-800">
                 Erro: {historico.erroPersistencia}
