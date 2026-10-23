@@ -2,6 +2,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import ErrorMessage from '../../components/Error/ErrorMessage'
+import { Loading } from '../../components/Loading/Loading'
 import { RECURSOS_ACESSIBILIDADE } from '../../constants/acessibilidade'
 import type { Local } from '../../types/Local'
 import {
@@ -223,30 +224,30 @@ export default function EditLocation() {
     }
   }
 
-  if (isLoading) return <p>Carregando dados do local...</p>
+  if (isLoading) return <Loading message="Carregando dados do local..." />
 
   return (
-    <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
-      <h2>Editar Local</h2>
+    <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
+      <h1 className="text-3xl font-bold text-gray-900">Editar local</h1>
 
-      {errorMessage && <ErrorMessage message={errorMessage} />}
+      {errorMessage && <ErrorMessage message={`Erro: ${errorMessage}`} />}
 
       {isSuccess && (
-        <p role="status" className="mt-4 text-green-800">
-          Local atualizado com sucesso!
+        <p role="status" className="mt-4 rounded-md border border-green-300 bg-green-50 p-4 text-green-900">
+          Sucesso: local atualizado com sucesso!
         </p>
       )}
 
       {naoEncontrado ? (
-        <ErrorMessage message="Local não encontrado." />
+        <ErrorMessage message="Erro: local não encontrado." />
       ) : carregado && (
         // ALTERADO: noValidate permite usar a validação personalizada
         <form noValidate onSubmit={handleSubmit} className="mt-8 space-y-6">
 
           {/* NOVO: resumo dos erros */}
           {quantidadeDeErros > 0 && (
-            <p role="alert" className="font-semibold text-red-800">
-              Atenção: corrija{' '}
+            <p role="alert" className="rounded-md border border-red-300 bg-red-50 p-4 font-semibold text-red-800">
+              Erro: corrija{' '}
               {quantidadeDeErros === 1
                 ? 'o campo destacado (1 erro).'
                 : `os ${quantidadeDeErros} campos destacados (${quantidadeDeErros} erros).`}
@@ -410,7 +411,7 @@ export default function EditLocation() {
           <button
             type="submit"
             disabled={enviando || isSuccess}
-            className="inline-flex min-h-11 items-center rounded-md bg-blue-700 px-5 font-medium text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 disabled:opacity-60"
+            className="inline-flex min-h-11 cursor-pointer items-center rounded-md bg-blue-700 px-5 font-medium text-white hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {enviando ? 'Salvando...' : 'Salvar alterações'}
           </button>
