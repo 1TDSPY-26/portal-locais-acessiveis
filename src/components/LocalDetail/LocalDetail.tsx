@@ -1,5 +1,6 @@
 import type { Local } from '../../types/Local'
 import { EmptyState } from '../EmptyState/EmptyState'
+import NotaAcessibilidade from '../NotaAcessibilidade/NotaAcessibilidade'
 
 type LocalDetailProps = {
   local: Local
@@ -28,8 +29,8 @@ export default function LocalDetail({ local }: LocalDetailProps) {
           <dt className="font-semibold text-gray-900">
             Nota de acessibilidade
           </dt>
-          <dd className="mt-1 text-gray-800">
-            {local.notaAcessibilidade} de 5
+          <dd className="mt-1">
+            <NotaAcessibilidade nota={local.notaAcessibilidade} />
           </dd>
         </div>
       </dl>
