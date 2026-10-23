@@ -1,12 +1,13 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useHistoricoPesquisas, MENSAGEM_ERRO_CARREGAR_HISTORICO, MENSAGEM_ERRO_SALVAR_HISTORICO } from './useHistoricoPesquisas';
+import { useHistoricoPesquisas, MENSAGEM_ERRO_CARREGAR_HISTORICO, MENSAGEM_ERRO_SALVAR_HISTORICO, MENSAGEM_ERRO_LIMPAR_HISTORICO } from './useHistoricoPesquisas';
 import * as historicoService from '../services/historicoPesquisas';
 
 vi.mock('../services/historicoPesquisas', () => ({
   lerHistorico: vi.fn(),
   adicionarPesquisa: vi.fn(),
-  salvarHistorico: vi.fn()
+  salvarHistorico: vi.fn(),
+  limparHistorico: vi.fn()
 }));
 
 describe('useHistoricoPesquisas', () => {
@@ -80,5 +81,41 @@ describe('useHistoricoPesquisas', () => {
       expect(historicoService.salvarHistorico).toHaveBeenCalledWith(['Museu']);
       expect(result.current.pesquisas).toEqual(['Museu']);
       expect(result.current.erroPersistencia).toBe(MENSAGEM_ERRO_SALVAR_HISTORICO);
+    });
+
+    it('Limpa o histórico com sucesso', () => {
+      vi.mocked(historicoService.lerHistorico).mockReturnValue(['Museu']);
+      vi.mocked(historicoService.limparHistorico).mockReturnValue(true);
+
+      const { result } = renderHook(() => useHistoricoPesquisas());
+
+      let apagou = false;
+
+      act(() => {
+        apagou = result.current.limpar();
+      });
+
+      expect(historicoService.limparHistorico).toHaveBeenCalledTimes(1);
+      expect(apagou).toBe(true);
+      expect(result.current.pesquisas).toEqual([]);
+      expect(result.current.erroPersistencia).toBe('');
+    });
+
+    it('Mantém o histórico e exibe erro quando não consegue apagá-lo', () => {
+      vi.mocked(historicoService.lerHistorico).mockReturnValue(['Museu']);
+      vi.mocked(historicoService.limparHistorico).mockReturnValue(false);
+
+      const { result } = renderHook(() => useHistoricoPesquisas());
+
+      let apagou = true;
+
+      act(() => {
+        apagou = result.current.limpar();
+      });
+
+      expect(historicoService.limparHistorico).toHaveBeenCalledTimes(1);
+      expect(apagou).toBe(false);
+      expect(result.current.pesquisas).toEqual(['Museu']);
+      expect(result.current.erroPersistencia).toBe(MENSAGEM_ERRO_LIMPAR_HISTORICO);
     });
   });
