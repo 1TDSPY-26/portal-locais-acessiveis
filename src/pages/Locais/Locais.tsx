@@ -12,6 +12,8 @@ import { useLocais } from '../../hooks/useLocais'
 import { useFiltrosNaUrl } from '../../hooks/useFiltrosNaUrl'
 import SeletorOrdenacao from '../../components/SeletorOrdenacao/SeletorOrdenacao'
 import { ordenarLocais, type CriterioOrdenacao } from '../../utils/ordenarLocais'
+import AvisoDadosReserva from '../../components/AvisoDadosReserva/AvisoDadosReserva'
+import { estaUsandoServidorReserva } from '../../services/servidorReserva'
 
 function normalizar(texto: string) {
   return texto
@@ -130,11 +132,16 @@ export default function Locais() {
       },
     )
 
+  const mostrarAvisoReserva =
+    estaUsandoServidorReserva() && locais.length > 0
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-16">
       <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
         Locais acessíveis
       </h1>
+
+      {mostrarAvisoReserva && <AvisoDadosReserva />}
 
       {avisoExclusao && (
         <p role="status" aria-live="polite" className="mt-4 rounded-md bg-green-50 p-3 text-sm text-green-800">
