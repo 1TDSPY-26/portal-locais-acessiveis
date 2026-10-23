@@ -3,10 +3,10 @@ import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import FiltrosLocais, { MENSAGEM_SEM_RECURSOS } from './FiltrosLocais'
 
-function criarProps() {
+function criarProps(categoria = '') {
   return {
     categorias: ['Saúde', 'Cultura'],
-    categoria: '',
+    categoria,
     recursos: [],
     buscaAtiva: false,
     onCategoriaChange: vi.fn(),
@@ -53,5 +53,37 @@ describe('Estado vazio do filtro de recursos', () => {
 
     expect(props.onCategoriaChange).toHaveBeenCalledWith('Saúde')
     expect(props.onLimpar).not.toHaveBeenCalled()
+  })
+
+  it('sem recursos e com categoria ativa, o botão "Limpar filtros e busca" continua funcionando', async () => {
+    const props = criarProps('Saúde')
+    const user = userEvent.setup()
+
+    render(<FiltrosLocais recursosDisponiveis={[]} {...props} />)
+
+    const botaoLimpar = screen.getByRole('button', {
+      name: 'Limpar filtros e busca (1)',
+    })
+
+    await user.click(botaoLimpar)
+
+    expect(props.onLimpar).toHaveBeenCalledTimes(1)
+  })
+
+  it('quando os recursos voltam, o aviso sai e a grade de checkboxes reaparece', () => {
+    const props = criarProps()
+    const { rerender } = render(
+      <FiltrosLocais recursosDisponiveis={[]} {...props} />,
+    )
+
+    expect(screen.getByText(MENSAGEM_SEM_RECURSOS)).toBeInTheDocument()
+
+    rerender(
+      <FiltrosLocais recursosDisponiveis={['Elevador', 'Rampa']} {...props} />,
+    )
+
+    expect(screen.queryByText(MENSAGEM_SEM_RECURSOS)).not.toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: 'Elevador' })).toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: 'Rampa' })).toBeInTheDocument()
   })
 })
