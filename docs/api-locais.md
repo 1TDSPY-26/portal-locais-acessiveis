@@ -41,7 +41,7 @@ em tempo de execução.
 | `categoria` | `string` | `"Biblioteca"` | Categoria usada pelo filtro |
 | `tiposAcessibilidade` | `string[]` | `["Rampa de acesso"]` | Recursos de acessibilidade declarados |
 | `descricao` | `string` | `"Espaço de leitura"` | Descrição do local |
-| `notaAcessibilidade` | `number` | `4` | Nota numérica, sem faixa documentada no contrato atual |
+| `notaAcessibilidade` | `number \| null` | `4` | Nota de 1 a 5; `null` quando o local ainda não foi avaliado |
 
 Exemplo **ilustrativo** de resposta JSON para `GET /locais`, compatível com
 `Local[]`:
@@ -62,11 +62,7 @@ Exemplo **ilustrativo** de resposta JSON para `GET /locais`, compatível com
 
 ## Erros e pendências de validação
 
-`apiRequest` devolve `{ data }` após sucesso ou `{ error: { message, status? } }`
-em falhas. Uma resposta HTTP não bem-sucedida gera `"Erro na requisição"`
-com o status; falha de rede gera `"Erro de conexão com a API"`; tempo esgotado
-gera `"Tempo limite da requisição excedido"`. A resposta HTTP 204 é tratada
-como sucesso sem dados. A mensagem detalhada enviada pelo servidor não é lida.
+`apiRequest` devolve `{ data }` após sucesso ou `{ error: { message, status? } }` em falhas. Para respostas não bem-sucedidas, os códigos 400, 401, 403, 404, 408, 409, 422, 429, 500, 502, 503 e 504 possuem mensagens específicas em português simples, que explicam o problema e orientam a pessoa sobre o que fazer. Outros códigos de erro 5xx usam a mensagem definida para o código 500; os demais códigos não mapeados usam a mensagem padrão. O código recebido continua disponível no campo `status`. Falhas de rede continuam gerando `"Erro de conexão com a API"` e o tempo limite gera `"Tempo limite da requisição excedido"`. A resposta 204 é tratada como sucesso sem dados. A mensagem detalhada enviada pelo servidor não é lida.
 
 Antes de integrar cadastro e realizar QA completo, confirmar com a equipe do
 backend a URL-base, os métodos, a obrigatoriedade e faixa dos campos, os
