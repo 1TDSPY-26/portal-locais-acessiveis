@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import LocalCard from '../../components/LocalCard/LocalCard'
 import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog'
 import { removerLocal } from '../../services/locais'
@@ -12,6 +12,10 @@ import { useLocais } from '../../hooks/useLocais'
 import { useFiltrosNaUrl } from '../../hooks/useFiltrosNaUrl'
 import SeletorOrdenacao from '../../components/SeletorOrdenacao/SeletorOrdenacao'
 import { ordenarLocais, type CriterioOrdenacao } from '../../utils/ordenarLocais'
+import Paginacao from '../../components/Paginacao/Paginacao'
+import { paginar } from '../../utils/paginar'
+
+const ITENS_POR_PAGINA = 9
 
 function normalizar(texto: string) {
   return texto
@@ -30,6 +34,8 @@ export default function Locais() {
     recarregar: loadLocais,
   } = useLocais()
   const [ordenacao, setOrdenacao] = useState<CriterioOrdenacao>('nome-asc')
+  const [pagina, setPagina] = useState(1)
+  const tituloListaRef = useRef<HTMLHeadingElement>(null)
 
   const [localParaExcluir, setLocalParaExcluir] = useState<Local | null>(null)
   const [excluindo, setExcluindo] = useState(false)
@@ -64,6 +70,8 @@ export default function Locais() {
   }
 
   const { busca, categoria, recursos, setBusca, setCategoria, setRecursos, limpar: limparFiltros } = useFiltrosNaUrl()
+  const chaveFiltros = JSON.stringify([busca, categoria, [...recursos].sort()])
+  const filtrosAnteriores = useRef(chaveFiltros)
 
   const categorias = useMemo(
     () =>
@@ -120,6 +128,22 @@ export default function Locais() {
     () => ordenarLocais(locaisVisiveis, ordenacao),
     [locaisVisiveis, ordenacao],
   )
+  const resultado = paginar(locaisOrdenados, pagina, ITENS_POR_PAGINA)
+
+  useEffect(() => {
+    if (filtrosAnteriores.current !== chaveFiltros) {
+      filtrosAnteriores.current = chaveFiltros
+      setPagina(1)
+      return
+    }
+    setPagina(resultado.paginaAtual)
+  }, [chaveFiltros, resultado.paginaAtual])
+
+  function mudarPagina(novaPagina: number) {
+    setPagina(novaPagina)
+    tituloListaRef.current?.focus()
+    tituloListaRef.current?.scrollIntoView?.({ block: 'start' })
+  }
 
   const horarioAtualizacao =
     atualizadoEm?.toLocaleTimeString(
@@ -148,6 +172,8 @@ export default function Locais() {
       >
         <h2
           id="lista-locais"
+          ref={tituloListaRef}
+          tabIndex={-1}
           className="sr-only"
         >
           Lista de locais cadastrados
@@ -186,10 +212,7 @@ export default function Locais() {
                   role="status"
                   aria-live="polite"
                 >
-                  {locaisVisiveis.length}{' '}
-                  {locaisVisiveis.length === 1
-                    ? 'local encontrado'
-                    : 'locais encontrados'}
+                  Mostrando {resultado.inicio}–{resultado.fim} de {resultado.total} locais
                 </p>
 
                 <div className="flex flex-wrap items-center gap-3">
@@ -246,7 +269,7 @@ export default function Locais() {
         {!isLoading &&
           locaisOrdenados.length > 0 && (
             <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {locaisOrdenados.map(
+              {resultado.itens.map(
                 (local) => (
                   <LocalCard
                     key={local.id}
@@ -257,6 +280,14 @@ export default function Locais() {
               )}
             </div>
           )}
+
+        {!isLoading && locaisOrdenados.length > 0 && (
+          <Paginacao
+            paginaAtual={resultado.paginaAtual}
+            totalPaginas={resultado.totalPaginas}
+            onMudarPagina={mudarPagina}
+          />
+        )}
       </section>
 
       <ConfirmDialog
