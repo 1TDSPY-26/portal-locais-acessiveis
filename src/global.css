@@ -32,6 +32,18 @@ html[data-contraste="alto"] main {
   border-color: white;
 }
 
+/* dentro do conteúdo, todo texto fica branco sobre preto (cards, rótulos, selects) */
+html[data-contraste="alto"] main * {
+  color: white;
+  background-color: black;
+}
+
+/* borda branca para os botões e a caixa de confirmação não sumirem no fundo preto */
+html[data-contraste="alto"] main button,
+html[data-contraste="alto"] main dialog {
+  border: 2px solid white;
+}
+
 /* links no alto contraste: amarelo (ffeb3b) e sublinhados */
 html[data-contraste="alto"] a {
   color: #ffeb3b;
