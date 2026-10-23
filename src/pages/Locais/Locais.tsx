@@ -22,7 +22,10 @@ const TEXTO_BOTAO_LOCALIZACAO = 'Usar minha localização'
 const TEXTO_FILTRO_PROXIMIDADE = 'Até 5 km de mim'
 
 function normalizar(texto: string) {
-  return texto.toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[̀-ͯ]/g, '')
+  return texto
+    .toLocaleLowerCase('pt-BR')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
 }
 
 // O "<=" faz um local a exatamente 5 km entrar. Sem coordenadas verificadas, o local sai.
@@ -75,7 +78,7 @@ export default function Locais() {
     }
   }
 
-  const { busca, categoria, recursos, setBusca, setCategoria, setRecursos, limpar } = useFiltrosNaUrl()
+  const { busca, categoria, recursos, setBusca, setCategoria, setRecursos, limpar: limparFiltros } = useFiltrosNaUrl()
   const { estado, posicao, solicitarLocalizacao } = useGeolocalizacao()
   const [proximidadeLigada, setProximidadeLigada] = useState(false)
   const posicaoDoFiltro = proximidadeLigada ? posicao : null
@@ -114,8 +117,6 @@ export default function Locais() {
       (!posicaoDoFiltro || estaAteCincoKm(local, posicaoDoFiltro)),
     )
   }, [locais, busca, categoria, recursos, posicaoDoFiltro])
-
-  const limparFiltros = limpar
 
   // Cada novo pedido desliga o filtro: a pessoa marca de novo quando a nova posição chegar.
   const usarMinhaLocalizacao = () => {

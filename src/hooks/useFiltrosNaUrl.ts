@@ -8,14 +8,9 @@ export function useFiltrosNaUrl() {
   const recursos = params.getAll('recurso')
 
   function gravar(alteracao: (novosParams: URLSearchParams) => void) {
-    setParams(
-      (atuais) => {
-        const novosParams = new URLSearchParams(atuais)
-        alteracao(novosParams)
-        return novosParams
-      },
-      { replace: true },
-    )
+    const novosParams = new URLSearchParams(params)
+    alteracao(novosParams)
+    setParams(novosParams, { replace: true })
   }
 
   function definirParametro(nome: string, valor: string) {
@@ -42,9 +37,8 @@ export function useFiltrosNaUrl() {
 
   function limpar() {
     gravar((novosParams) => {
-      novosParams.delete('busca')
-      novosParams.delete('categoria')
-      novosParams.delete('recurso')
+      const nomes = [...novosParams.keys()]
+      nomes.forEach((nome) => novosParams.delete(nome))
     })
   }
 
