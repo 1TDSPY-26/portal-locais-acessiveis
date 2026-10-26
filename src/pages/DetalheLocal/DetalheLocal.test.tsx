@@ -115,9 +115,65 @@ describe('DetalheLocal', () => {
 
   it('mostra erro quando a API falha', async () => {
     vi.mocked(obterLocalPorId).mockResolvedValue({
-      error: { message: 'Erro de conexão com a API' },
+      error: { status: 500, message: 'Erro de conexão com a API' },
     })
     renderizarDetalhe('1')
     expect(await screen.findByRole('alert')).toHaveTextContent('Erro de conexão com a API')
+    expect(
+      screen.queryByRole('link', { name: /^Editar local/ }),
+    ).not.toBeInTheDocument()
+  })
+
+  it.each(['abc', '0', '-3', '2.5'])(
+    'rejeita identificador inválido "%s" sem chamar o serviço',
+    (id) => {
+      vi.mocked(obterLocalPorId).mockResolvedValue({ data: local })
+      renderizarDetalhe(id)
+
+      expect(screen.getByRole('alert')).toHaveTextContent(
+        'Endereço inválido: o identificador do local precisa ser um número.',
+      )
+      expect(obterLocalPorId).not.toHaveBeenCalled()
+      expect(
+        screen.queryByRole('link', { name: /^Editar local/ }),
+      ).not.toBeInTheDocument()
+    },
+  )
+
+  it('mostra local não encontrado quando o serviço responde com 404', async () => {
+    vi.mocked(obterLocalPorId).mockResolvedValue({
+      error: { status: 404, message: 'Mensagem original do serviço' },
+    })
+    renderizarDetalhe('1')
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Local não encontrado.')
+    expect(
+      screen.queryByRole('link', { name: /^Editar local/ }),
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: 'Voltar para a lista de locais' }),
+    ).toHaveAttribute('href', '/locais')
+  })
+
+  it('mostra erro inesperado quando o serviço rejeita a Promise', async () => {
+    vi.mocked(obterLocalPorId).mockRejectedValue(new Error('Falha inesperada'))
+    renderizarDetalhe('1')
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Erro inesperado ao carregar o local.',
+    )
+    expect(
+      screen.queryByRole('link', { name: /^Editar local/ }),
+    ).not.toBeInTheDocument()
+  })
+
+  it('mostra local não encontrado quando o serviço responde sem dados', async () => {
+    vi.mocked(obterLocalPorId).mockResolvedValue({})
+    renderizarDetalhe('1')
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Local não encontrado.')
+    expect(
+      screen.queryByRole('link', { name: /^Editar local/ }),
+    ).not.toBeInTheDocument()
   })
 })
