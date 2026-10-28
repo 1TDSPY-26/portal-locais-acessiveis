@@ -8,6 +8,8 @@ import ErrorMessage from '../../components/Error/ErrorMessage'
 import { EmptyState } from '../../components/EmptyState/EmptyState'
 import CampoBusca from '../../components/CampoBusca/CampoBusca'
 import FiltrosLocais from '../../components/FiltrosLocais/FiltrosLocais'
+import HistoricoPesquisas from '../../components/HistoricoPesquisas/HistoricoPesquisas'
+import { useHistoricoPesquisas } from '../../hooks/useHistoricoPesquisas'
 import { useLocais } from '../../hooks/useLocais'
 import { useFiltrosNaUrl } from '../../hooks/useFiltrosNaUrl'
 import SeletorOrdenacao from '../../components/SeletorOrdenacao/SeletorOrdenacao'
@@ -123,6 +125,12 @@ export default function Locais() {
   }
 
   const { busca, categoria, recursos, setBusca, setCategoria, setRecursos, limpar: limparFiltros } = useFiltrosNaUrl()
+  const historico = useHistoricoPesquisas()
+
+  function selecionarPesquisa(texto: string) {
+    setBusca(texto)
+    historico.registrar(texto)
+  }
   const { estado, posicao, solicitarLocalizacao } = useGeolocalizacao()
   const [proximidadeLigada, setProximidadeLigada] = useState(false)
   const posicaoDoFiltro = proximidadeLigada ? posicao : null
@@ -268,7 +276,19 @@ export default function Locais() {
               <CampoBusca
                 valor={busca}
                 onChange={setBusca}
+                onPesquisar={historico.registrar}
               />
+
+              <HistoricoPesquisas
+                pesquisas={historico.pesquisas}
+                onSelecionar={selecionarPesquisa}
+              />
+
+              {historico.erroPersistencia && (
+                <p role="alert" className="text-sm font-medium text-red-800">
+                  Erro: {historico.erroPersistencia}
+                </p>
+              )}
 
               <FiltrosLocais
                 categorias={categorias}
