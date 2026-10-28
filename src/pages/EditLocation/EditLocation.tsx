@@ -1,9 +1,10 @@
-
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import ErrorMessage from '../../components/Error/ErrorMessage'
+import { Loading } from '../../components/Loading/Loading'
 import { RECURSOS_ACESSIBILIDADE } from '../../constants/acessibilidade'
 import type { Local } from '../../types/Local'
+import { useTituloDocumento } from '../../hooks/useTituloDocumento'
 import {
   atualizarLocal as updateLocation,
   obterLocalPorId as getLocationById,
@@ -13,6 +14,11 @@ import {
   validarLocal,
   type ErrosLocal,
 } from '../../utils/validarLocal'
+import {
+  CONTEXTO_CARREGAR_LOCAL,
+  CONTEXTO_SALVAR_LOCAL,
+  montarMensagemComContexto,
+} from '../../utils/mensagemComContexto'
 
 // Temporário até a #120 exportar NovoLocal: importar o tipo de ../../types/Local.
 type NovoLocal = Omit<Local, 'id'>
@@ -26,8 +32,13 @@ const LOCAL_VAZIO: NovoLocal = {
   notaAcessibilidade: 1,
 }
 
+// Mesmo container do cadastro: as duas telas de formulário ficam iguais em qualquer largura.
+const classeContainer = 'mx-auto max-w-2xl px-4 py-10 sm:px-6'
+
 const classeCampo =
-  'mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-base focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-700'
+  'mt-1 block min-h-11 w-full rounded-md border border-gray-300 px-3 py-2 text-base focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-700'
+
+const MENSAGEM_CARREGANDO = 'Carregando dados do local...'
 
 function separarDadosEditaveis(local: Local): NovoLocal {
   return {
@@ -51,15 +62,16 @@ function removerEspacosDasPontas(dados: NovoLocal): NovoLocal {
 }
 
 export default function EditLocation() {
+  useTituloDocumento('Editar local')
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [dados, setDados] = useState<NovoLocal>(LOCAL_VAZIO)
   const [naoEncontrado, setNaoEncontrado] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
-  const [isSuccess, setIsSuccess] = useState(false)
   const [carregado, setCarregado] = useState(false)
   const [enviando, setEnviando] = useState(false)
+  const erroRef = useRef<HTMLDivElement>(null)
 
   // NOVO: estado dos erros de validação
   const [erros, setErros] = useState<ErrosLocal>({})
@@ -80,7 +92,6 @@ export default function EditLocation() {
       setIsLoading(true)
       setNaoEncontrado(false)
       setCarregado(false)
-      setIsSuccess(false)
       setErrorMessage('')
       setErros({})
 
@@ -100,7 +111,12 @@ export default function EditLocation() {
         }
 
         if (error) {
-          setErrorMessage(error.message)
+          setErrorMessage(
+            montarMensagemComContexto(
+              CONTEXTO_CARREGAR_LOCAL,
+              error.message,
+            ),
+          )
           return
         }
 
@@ -127,12 +143,10 @@ export default function EditLocation() {
     }
   }, [id])
 
+  // Leva o foco para a mensagem de erro assim que ela aparece (carga ou envio).
   useEffect(() => {
-    if (!isSuccess) return
-
-    const temporizador = setTimeout(() => navigate('/locais'), 1500)
-    return () => clearTimeout(temporizador)
-  }, [isSuccess, navigate])
+    if (errorMessage && !isLoading) erroRef.current?.focus()
+  }, [errorMessage, isLoading])
 
   // ALTERADO: limpa o erro do campo quando ele é modificado
   function alterarCampo(
@@ -178,7 +192,7 @@ export default function EditLocation() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    if (!id || !carregado || naoEncontrado || enviando || isSuccess) return
+    if (!id || !carregado || naoEncontrado || enviando) return
 
     // NOVO: valida todos os campos antes de chamar a API
     const novosErros = validarLocal({
@@ -211,11 +225,19 @@ export default function EditLocation() {
       }
 
       if (error) {
-        setErrorMessage(error.message)
+        setErrorMessage(
+          montarMensagemComContexto(
+            CONTEXTO_SALVAR_LOCAL,
+            error.message,
+          ),
+        )
         return
       }
 
-      setIsSuccess(true)
+      // A confirmação é mostrada (e focada) na página de detalhe.
+      navigate(`/locais/${id}`, {
+        state: { mensagem: 'Alterações salvas com sucesso.' },
+      })
     } catch {
       setErrorMessage('Erro inesperado ao atualizar o local.')
     } finally {
@@ -223,18 +245,26 @@ export default function EditLocation() {
     }
   }
 
-  if (isLoading) return <p>Carregando dados do local...</p>
+  if (isLoading) {
+    return (
+      <div className={classeContainer}>
+        <Loading message={MENSAGEM_CARREGANDO} />
+      </div>
+    )
+  }
 
   return (
-    <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
-      <h2>Editar Local</h2>
+    <div className={classeContainer}>
+      <h1 className="text-3xl font-bold tracking-tight">Editar local</h1>
 
-      {errorMessage && <ErrorMessage message={errorMessage} />}
-
-      {isSuccess && (
-        <p role="status" className="mt-4 text-green-800">
-          Local atualizado com sucesso!
-        </p>
+      {errorMessage && (
+        <div
+          ref={erroRef}
+          tabIndex={-1}
+          className="focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-blue-700"
+        >
+          <ErrorMessage message={errorMessage} />
+        </div>
       )}
 
       {naoEncontrado ? (
@@ -349,7 +379,7 @@ export default function EditLocation() {
                         ? 'erro-tiposAcessibilidade'
                         : undefined
                     }
-                    className="h-5 w-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-700"
+                    className="h-5 w-5 shrink-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-700"
                   />
                   {recurso}
                 </label>
@@ -373,7 +403,7 @@ export default function EditLocation() {
 
             <select
               id="notaAcessibilidade"
-              value={dados.notaAcessibilidade}
+              value={dados.notaAcessibilidade ?? 0}
               onChange={(evento) =>
                 alterarCampo(
                   'notaAcessibilidade',
@@ -389,6 +419,7 @@ export default function EditLocation() {
               }
               className={`${classeCampo} ${erros.notaAcessibilidade ? 'border-red-700' : ''}`}
             >
+              <option value={0}>Selecione</option>
               {[1, 2, 3, 4, 5].map((nota) => (
                 <option key={nota} value={nota}>
                   {nota}
@@ -408,7 +439,7 @@ export default function EditLocation() {
 
           <button
             type="submit"
-            disabled={enviando || isSuccess}
+            disabled={enviando}
             className="inline-flex min-h-11 items-center rounded-md bg-blue-700 px-5 font-medium text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 disabled:opacity-60"
           >
             {enviando ? 'Salvando...' : 'Salvar alterações'}

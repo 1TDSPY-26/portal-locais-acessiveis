@@ -1,4 +1,6 @@
 import type { Local } from '../../types/Local'
+import { EmptyState } from '../EmptyState/EmptyState'
+import NotaAcessibilidade from '../NotaAcessibilidade/NotaAcessibilidade'
 
 type LocalDetailProps = {
   local: Local
@@ -27,8 +29,8 @@ export default function LocalDetail({ local }: LocalDetailProps) {
           <dt className="font-semibold text-gray-900">
             Nota de acessibilidade
           </dt>
-          <dd className="mt-1 text-gray-800">
-            {local.notaAcessibilidade} de 5
+          <dd className="mt-1">
+            <NotaAcessibilidade nota={local.notaAcessibilidade} />
           </dd>
         </div>
       </dl>
@@ -49,9 +51,13 @@ export default function LocalDetail({ local }: LocalDetailProps) {
         </h2>
 
         {semRecursos ? (
-          <p className="mt-2 text-gray-700">
-            Nenhum recurso de acessibilidade informado.
-          </p>
+          <EmptyState
+            titulo="Nenhum recurso de acessibilidade informado."
+            link={{
+              rotulo: 'Adicionar recursos',
+              para: `/locais/editar/${local.id}`,
+            }}
+          />
         ) : (
           <ul className="mt-3 flex flex-wrap gap-2">
             {local.tiposAcessibilidade.map((tipo) => (
