@@ -90,6 +90,13 @@ describe('limparHistorico', () => {
       expect(localStorage.getItem('outra-chave')).toBe('deve permanecer');
     });
 
+    it('Retorna true mesmo quando a chave do histórico não existe', () => {
+      const apagou = limparHistorico();
+
+      expect(apagou).toBe(true);
+      expect(localStorage.getItem(CHAVE_HISTORICO)).toBeNull();
+    });
+
     it('Retorna false quando não consegue remover o histórico', () => {
       vi.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => {
         throw new Error('Acesso negado!');

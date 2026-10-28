@@ -118,4 +118,27 @@ describe('useHistoricoPesquisas', () => {
       expect(result.current.pesquisas).toEqual(['Museu']);
       expect(result.current.erroPersistencia).toBe(MENSAGEM_ERRO_LIMPAR_HISTORICO);
     });
+
+    it('Depois de uma falha, uma nova tentativa apaga o histórico e o erro', () => {
+      vi.mocked(historicoService.lerHistorico).mockReturnValue(['Museu']);
+      vi.mocked(historicoService.limparHistorico)
+        .mockReturnValueOnce(false)
+        .mockReturnValueOnce(true);
+
+      const { result } = renderHook(() => useHistoricoPesquisas());
+
+      act(() => {
+        result.current.limpar();
+      });
+
+      expect(result.current.pesquisas).toEqual(['Museu']);
+      expect(result.current.erroPersistencia).toBe(MENSAGEM_ERRO_LIMPAR_HISTORICO);
+
+      act(() => {
+        result.current.limpar();
+      });
+
+      expect(result.current.pesquisas).toEqual([]);
+      expect(result.current.erroPersistencia).toBe('');
+    });
   });
