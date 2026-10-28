@@ -1,9 +1,10 @@
-
 import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import ErrorMessage from '../../components/Error/ErrorMessage'
+import { Loading } from '../../components/Loading/Loading'
 import { RECURSOS_ACESSIBILIDADE } from '../../constants/acessibilidade'
 import type { Local } from '../../types/Local'
+import { useTituloDocumento } from '../../hooks/useTituloDocumento'
 import {
   atualizarLocal as updateLocation,
   obterLocalPorId as getLocationById,
@@ -26,8 +27,13 @@ const LOCAL_VAZIO: NovoLocal = {
   notaAcessibilidade: 1,
 }
 
+// Mesmo container do cadastro: as duas telas de formulário ficam iguais em qualquer largura.
+const classeContainer = 'mx-auto max-w-2xl px-4 py-10 sm:px-6'
+
 const classeCampo =
-  'mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-base focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-700'
+  'mt-1 block min-h-11 w-full rounded-md border border-gray-300 px-3 py-2 text-base focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-700'
+
+const MENSAGEM_CARREGANDO = 'Carregando dados do local...'
 
 function separarDadosEditaveis(local: Local): NovoLocal {
   return {
@@ -51,6 +57,7 @@ function removerEspacosDasPontas(dados: NovoLocal): NovoLocal {
 }
 
 export default function EditLocation() {
+  useTituloDocumento('Editar local')
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [dados, setDados] = useState<NovoLocal>(LOCAL_VAZIO)
@@ -223,11 +230,17 @@ export default function EditLocation() {
     }
   }
 
-  if (isLoading) return <p>Carregando dados do local...</p>
+  if (isLoading) {
+    return (
+      <div className={classeContainer}>
+        <Loading message={MENSAGEM_CARREGANDO} />
+      </div>
+    )
+  }
 
   return (
-    <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
-      <h2>Editar Local</h2>
+    <div className={classeContainer}>
+      <h1 className="text-3xl font-bold tracking-tight">Editar local</h1>
 
       {errorMessage && <ErrorMessage message={errorMessage} />}
 
@@ -349,7 +362,7 @@ export default function EditLocation() {
                         ? 'erro-tiposAcessibilidade'
                         : undefined
                     }
-                    className="h-5 w-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-700"
+                    className="h-5 w-5 shrink-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-700"
                   />
                   {recurso}
                 </label>
@@ -373,7 +386,7 @@ export default function EditLocation() {
 
             <select
               id="notaAcessibilidade"
-              value={dados.notaAcessibilidade}
+              value={dados.notaAcessibilidade ?? 0}
               onChange={(evento) =>
                 alterarCampo(
                   'notaAcessibilidade',
@@ -389,6 +402,7 @@ export default function EditLocation() {
               }
               className={`${classeCampo} ${erros.notaAcessibilidade ? 'border-red-700' : ''}`}
             >
+              <option value={0}>Selecione</option>
               {[1, 2, 3, 4, 5].map((nota) => (
                 <option key={nota} value={nota}>
                   {nota}

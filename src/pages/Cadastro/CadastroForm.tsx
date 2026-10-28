@@ -12,7 +12,7 @@ type CampoTextoProps = {
 }
 
 const classeCampo =
-  'mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-base focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-700'
+  'mt-1 block min-h-11 w-full rounded-md border border-gray-300 px-3 py-2 text-base focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-700'
 
 function CampoTexto({ id, rotulo, valor, erro, onChange }: CampoTextoProps) {
   const idErro = `erro-${id}`
@@ -120,7 +120,7 @@ export default function CadastroForm({ onSubmit, enviando = false }: CadastroFor
                 type="checkbox"
                 checked={dados.tiposAcessibilidade.includes(recurso)}
                 onChange={() => alternarRecurso(recurso)}
-                className="h-5 w-5"
+                className="h-5 w-5 shrink-0"
               />
               {recurso}
             </label>
@@ -136,7 +136,7 @@ export default function CadastroForm({ onSubmit, enviando = false }: CadastroFor
           <label htmlFor="notaAcessibilidade" className="block font-medium">Nota de acessibilidade (obrigatório)</label>
           <select
             id="notaAcessibilidade"
-            value={dados.notaAcessibilidade}
+            value={dados.notaAcessibilidade ?? 0}
             onChange={(e) => alterarCampo('notaAcessibilidade', Number(e.target.value))}
             aria-invalid={erros.notaAcessibilidade ? true : undefined}
             aria-describedby={erros.notaAcessibilidade ? 'erro-notaAcessibilidade' : undefined}
