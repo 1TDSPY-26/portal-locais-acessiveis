@@ -13,6 +13,18 @@ A URL-base vem de `VITE_API_URL`. O valor em [`.env.example`](../.env.example)
 Sem uma URL real configurada, consultas e cadastros não podem ser validados de
 ponta a ponta. A variável do Vite é pública no navegador: não incluir segredos.
 
+Quando `VITE_API_URL` não existe ou está vazia, a função `resolverApiUrl`
+(`src/services/api.ts`) usa `http://localhost:3000` e, só no `npm run dev`,
+mostra um aviso no console explicando que falta criar o `.env.local`. Espaços
+nas pontas e a barra final são removidos, para não gerar `//locais`.
+
+| `VITE_API_URL` | URL usada |
+| --- | --- |
+| não existe | `http://localhost:3000` + aviso no console |
+| `""` ou `"   "` | `http://localhost:3000` + aviso no console |
+| `"https://api.site.com/"` | `https://api.site.com` |
+| `"https://api.site.com"` | `https://api.site.com` |
+
 ## Operações usadas pelo frontend
 
 | Função | Método e caminho | Entrada | Tipo de retorno no frontend |
@@ -41,7 +53,7 @@ em tempo de execução.
 | `categoria` | `string` | `"Biblioteca"` | Categoria usada pelo filtro |
 | `tiposAcessibilidade` | `string[]` | `["Rampa de acesso"]` | Recursos de acessibilidade declarados |
 | `descricao` | `string` | `"Espaço de leitura"` | Descrição do local |
-| `notaAcessibilidade` | `number` | `4` | Nota numérica, sem faixa documentada no contrato atual |
+| `notaAcessibilidade` | `number \| null` | `4` | Nota de 1 a 5; `null` quando o local ainda não foi avaliado |
 
 Exemplo **ilustrativo** de resposta JSON para `GET /locais`, compatível com
 `Local[]`:

@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import ErrorMessage from '../../components/Error/ErrorMessage'
 import { Loading } from '../../components/Loading/Loading'
 import LocalDetail from '../../components/LocalDetail/LocalDetail'
+import { useTituloDocumento } from '../../hooks/useTituloDocumento'
 import { obterLocalPorId } from '../../services/locais'
 import type { Local } from '../../types/Local'
 
@@ -35,6 +36,15 @@ export default function DetalheLocal() {
     () => (location.state as EstadoDaNavegacao | null)?.mensagem ?? '',
   )
   const avisoRef = useRef<HTMLParagraphElement>(null)
+
+  // O título da aba acompanha o estado da página.
+  let tituloDaAba = 'Local não encontrado'
+  if (isLoading) {
+    tituloDaAba = 'Carregando local'
+  } else if (local) {
+    tituloDaAba = local.nome
+  }
+  useTituloDocumento(tituloDaAba)
 
   useEffect(() => {
     if (!idValido) return
