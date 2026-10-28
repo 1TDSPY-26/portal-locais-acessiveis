@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom'
+import { useTituloDocumento } from '../../hooks/useTituloDocumento'
 
 export default function Home() {
+  useTituloDocumento('Início')
+
   return (
     <div className="mx-auto px-4 py-10 sm:px-6 sm:py-16">
       <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
