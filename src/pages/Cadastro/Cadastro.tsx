@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { criarLocal } from '../../services/locais'
 import type { Local } from '../../types/Local'
+import { useTituloDocumento } from '../../hooks/useTituloDocumento'
 import CadastroForm from './CadastroForm'
 
 type NovoLocal = Omit<Local, 'id'>
@@ -18,6 +19,8 @@ function removerEspacosDasPontas(dados: NovoLocal): NovoLocal {
 }
 
 export default function Cadastro() {
+  useTituloDocumento('Cadastrar local')
+
   const [enviando, setEnviando] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [localCriado, setLocalCriado] = useState<Local | null>(null)
