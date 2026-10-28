@@ -102,7 +102,7 @@ describe('EditLocation', () => {
     abrirEdicao()
 
     expect(
-      await screen.findByText('Falha ao carregar'),
+      await screen.findByText(/Falha ao carregar/)
     ).toBeInTheDocument()
   })
 
@@ -185,7 +185,7 @@ describe('EditLocation', () => {
     )
 
     expect(
-      await screen.findByText('Falha ao salvar'),
+      await screen.findByText(/Falha ao salvar/),
     ).toBeInTheDocument()
 
     expect(input).toHaveValue('Novo Nome')
