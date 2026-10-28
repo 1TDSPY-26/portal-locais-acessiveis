@@ -18,7 +18,7 @@ async function abrirListagem() {
     </MemoryRouter>,
   )
 
-  await screen.findByText('3 locais encontrados')
+  await screen.findByText('Mostrando 1–3 de 3 locais')
 }
 
 function nomesVisiveis() {
@@ -33,7 +33,7 @@ describe('Locais: busca e filtros', () => {
     invalidarCacheLocais()
   })
 
-  it('busca por parte do nome e usa o singular', async () => {
+  it('busca por parte do nome e conta um único resultado', async () => {
     await abrirListagem()
 
     await userEvent.type(
@@ -42,7 +42,7 @@ describe('Locais: busca e filtros', () => {
     )
 
     expect(nomesVisiveis()).toEqual(['Parque Verde'])
-    expect(screen.getByText('1 local encontrado')).toBeInTheDocument()
+    expect(screen.getByText('Mostrando 1–1 de 1 locais')).toBeInTheDocument()
   })
 
   it('ignora acentos e maiúsculas', async () => {
@@ -54,7 +54,7 @@ describe('Locais: busca e filtros', () => {
     )
 
     expect(nomesVisiveis()).toEqual(['Centro Cultural Ação'])
-    expect(screen.getByText('1 local encontrado')).toBeInTheDocument()
+    expect(screen.getByText('Mostrando 1–1 de 1 locais')).toBeInTheDocument()
   })
 
   it('exige todos os recursos marcados', async () => {
@@ -64,7 +64,7 @@ describe('Locais: busca e filtros', () => {
     await userEvent.click(screen.getByLabelText('Elevador'))
 
     expect(nomesVisiveis()).toEqual(['Biblioteca Central'])
-    expect(screen.getByText('1 local encontrado')).toBeInTheDocument()
+    expect(screen.getByText('Mostrando 1–1 de 1 locais')).toBeInTheDocument()
   })
 
   it('filtra por categoria', async () => {
@@ -80,7 +80,7 @@ describe('Locais: busca e filtros', () => {
       'Centro Cultural Ação',
     ])
 
-    expect(screen.getByText('2 locais encontrados')).toBeInTheDocument()
+    expect(screen.getByText('Mostrando 1–2 de 2 locais')).toBeInTheDocument()
   })
 
   it('combina busca com categoria', async () => {
@@ -97,7 +97,7 @@ describe('Locais: busca e filtros', () => {
     )
 
     expect(nomesVisiveis()).toEqual(['Biblioteca Central'])
-    expect(screen.getByText('1 local encontrado')).toBeInTheDocument()
+    expect(screen.getByText('Mostrando 1–1 de 1 locais')).toBeInTheDocument()
   })
 
   it('mostra zero locais quando nenhum resultado corresponde à busca', async () => {
@@ -108,7 +108,7 @@ describe('Locais: busca e filtros', () => {
       'inexistente',
     )
 
-    expect(screen.getByText('0 locais encontrados')).toBeInTheDocument()
+    expect(screen.getByText('Mostrando 0–0 de 0 locais')).toBeInTheDocument()
     expect(screen.queryAllByRole('heading', { level: 3 })).toHaveLength(0)
   })
 
@@ -139,6 +139,6 @@ describe('Locais: busca e filtros', () => {
     expect(screen.getByLabelText('Categoria')).toHaveValue('')
 
     expect(nomesVisiveis()).toHaveLength(3)
-    expect(screen.getByText('3 locais encontrados')).toBeInTheDocument()
+    expect(screen.getByText('Mostrando 1–3 de 3 locais')).toBeInTheDocument()
   })
 })
