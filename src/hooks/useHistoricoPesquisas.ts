@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { lerHistorico, adicionarPesquisa, salvarHistorico } from '../services/historicoPesquisas';
 
 export const MENSAGEM_ERRO_CARREGAR_HISTORICO = 
-  'Não foi possivel carregar o histórico neste navegador. Você pode continuar pesquisando.';
+  'Não foi possível carregar o histórico neste navegador. Você pode continuar pesquisando.';
 
 export const MENSAGEM_ERRO_SALVAR_HISTORICO = 
-  'Não foi possivel salvar o histórico neste navegador. Você pode continuar pesquisando.';
+  'Não foi possível salvar o histórico neste navegador. Você pode continuar pesquisando.';
 
 export type RetornoHistoricoPesquisas = {
   pesquisas: string[];

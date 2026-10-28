@@ -43,9 +43,9 @@ const LOCAIS: Local[] = [
 ]
 
 const ERRO_SALVAR =
-  'Erro: Não foi possivel salvar o histórico neste navegador. Você pode continuar pesquisando.'
+  'Erro: Não foi possível salvar o histórico neste navegador. Você pode continuar pesquisando.'
 const ERRO_CARREGAR =
-  'Erro: Não foi possivel carregar o histórico neste navegador. Você pode continuar pesquisando.'
+  'Erro: Não foi possível carregar o histórico neste navegador. Você pode continuar pesquisando.'
 
 async function renderizarLocais() {
   render(
@@ -146,7 +146,7 @@ describe('Locais com histórico de pesquisas', () => {
 
     await renderizarLocais()
 
-    expect(botoesDoHistorico()).toEqual(['Biblioteca', 'Museu'])
+    expect(botoesDoHistorico()).toEqual(['Museu', 'Biblioteca'])
   })
 
   it('JSON inválido resulta em lista vazia sem quebrar a página', async () => {
