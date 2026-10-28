@@ -43,11 +43,32 @@ export default function Locais() {
   const [excluindo, setExcluindo] = useState(false)
   const [erroExclusao, setErroExclusao] = useState('')
   const [avisoExclusao, setAvisoExclusao] = useState('')
+  const avisoExclusaoRef = useRef<HTMLParagraphElement>(null)
+  const botaoQueAbriuRef = useRef<HTMLElement | null>(null)
+
+  // O botão "Excluir" some junto com o card: leva o foco para a confirmação.
+  useEffect(() => {
+    if (!avisoExclusao) return
+    const quadro = requestAnimationFrame(() => avisoExclusaoRef.current?.focus())
+    return () => cancelAnimationFrame(quadro)
+  }, [avisoExclusao])
+
+  function abrirExclusao(local: Local) {
+    // Guarda quem tinha o foco para devolvê-lo se a pessoa cancelar.
+    botaoQueAbriuRef.current = document.activeElement as HTMLElement | null
+    setLocalParaExcluir(local)
+  }
 
   function cancelarExclusao() {
     if (excluindo) return
     setLocalParaExcluir(null)
     setErroExclusao('')
+
+    // requestAnimationFrame espera o <dialog> terminar de fechar;
+    // sem isso, ele pega o foco de volta.
+    requestAnimationFrame(() => {
+      botaoQueAbriuRef.current?.focus()
+    })
   }
 
   async function confirmarExclusao() {
@@ -163,7 +184,13 @@ export default function Locais() {
       </h1>
 
       {avisoExclusao && (
-        <p role="status" aria-live="polite" className="mt-4 rounded-md bg-green-50 p-3 text-sm text-green-800">
+        <p
+          ref={avisoExclusaoRef}
+          tabIndex={-1}
+          role="status"
+          aria-live="polite"
+          className="mt-4 rounded-md bg-green-50 p-3 text-sm text-green-800 focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-blue-700"
+        >
           {avisoExclusao}
         </p>
       )}
@@ -276,7 +303,7 @@ export default function Locais() {
                   <LocalCard
                     key={local.id}
                     local={local}
-                    onExcluir={setLocalParaExcluir}
+                    onExcluir={abrirExclusao}
                   />
                 ),
               )}
