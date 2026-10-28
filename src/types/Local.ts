@@ -5,5 +5,6 @@ export type Local = {
   categoria: string
   tiposAcessibilidade: string[]
   descricao: string
-  notaAcessibilidade: number
+  /** Nota de 1 a 5. `null` (ou ausente) quando o local ainda não foi avaliado. */
+  notaAcessibilidade: number | null
 }
