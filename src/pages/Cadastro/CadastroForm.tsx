@@ -136,7 +136,7 @@ export default function CadastroForm({ onSubmit, enviando = false }: CadastroFor
           <label htmlFor="notaAcessibilidade" className="block font-medium">Nota de acessibilidade (obrigatório)</label>
           <select
             id="notaAcessibilidade"
-            value={dados.notaAcessibilidade}
+            value={dados.notaAcessibilidade ?? 0}
             onChange={(e) => alterarCampo('notaAcessibilidade', Number(e.target.value))}
             aria-invalid={erros.notaAcessibilidade ? true : undefined}
             aria-describedby={erros.notaAcessibilidade ? 'erro-notaAcessibilidade' : undefined}
