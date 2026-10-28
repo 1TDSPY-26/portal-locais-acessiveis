@@ -84,10 +84,3 @@ aqui qual é e por quê.
   ele. Confira o novo endereço e atualize o registro e a data.
 - A API ganhou um local novo: ele fica sem distância até ser conferido e
   cadastrado.
-```
-
-O que cada parte faz:
-
-- "Locais conferidos" é a tabela que o critério de aceite pede: `id`, endereço, coordenadas, link e data de cada local.
-- As observações explicam os casos que podem gerar dúvida no QA: endereço sem número (ids 2, 3 e 5) e o nome atual da praça no mapa (id 5).
-- O passo a passo permite refazer a conferência só com o navegador, sem programa nenhum.
