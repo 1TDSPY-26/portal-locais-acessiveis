@@ -65,6 +65,8 @@ describe('DetalheLocal', () => {
     expect(screen.getByRole('status')).toHaveTextContent(
       'Carregando informações do local...',
     )
+    expect(screen.queryByRole('heading', { level: 1 })).not.toBeInTheDocument()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
     expect(
       screen.queryByRole('link', { name: /^Editar local/ }),
     ).not.toBeInTheDocument()
@@ -91,7 +93,7 @@ describe('DetalheLocal', () => {
       await screen.findByRole('link', { name: 'Voltar para a lista de locais' }),
     ).toHaveAttribute('href', '/locais')
     expect(
-      screen.getByRole('link', { name: /^Editar local/ }),
+      screen.getByRole('link', { name: /Editar local\s?Biblioteca Central/ }),
     ).toHaveAttribute('href', '/locais/editar/1')
   })
 
@@ -134,6 +136,7 @@ describe('DetalheLocal', () => {
         'Endereço inválido: o identificador do local precisa ser um número.',
       )
       expect(obterLocalPorId).not.toHaveBeenCalled()
+      expect(screen.queryByRole('status')).not.toBeInTheDocument()
       expect(
         screen.queryByRole('link', { name: /^Editar local/ }),
       ).not.toBeInTheDocument()
@@ -142,11 +145,15 @@ describe('DetalheLocal', () => {
 
   it('mostra local não encontrado quando o serviço responde com 404', async () => {
     vi.mocked(obterLocalPorId).mockResolvedValue({
-      error: { status: 404, message: 'Mensagem original do serviço' },
+      error: {
+        status: 404,
+        message: 'Não encontramos o que você procurou. Ele pode ter sido removido.',
+      },
     })
     renderizarDetalhe('1')
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Local não encontrado.')
+    expect(screen.getByRole('alert')).not.toHaveTextContent('Não encontramos')
     expect(
       screen.queryByRole('link', { name: /^Editar local/ }),
     ).not.toBeInTheDocument()
