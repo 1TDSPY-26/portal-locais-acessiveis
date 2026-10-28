@@ -132,3 +132,21 @@ describe('DetalheLocal - nova tentativa', () => {
     expect(alertaDaTerceiraFalha).toHaveTextContent(DICA_FALHAS_SEGUIDAS)
   })
 })
+it('mantém o foco no resultado da tentativa mesmo com aviso vindo da edição', async () => {
+  vi.mocked(obterLocalPorId)
+    .mockResolvedValueOnce(falha503)
+    .mockResolvedValueOnce({ data: local })
+  render(
+    <MemoryRouter initialEntries={[{ pathname: '/locais/1', state: { mensagem: 'Local atualizado.' } }]}>
+      <Routes><Route path='/locais/:id' element={<DetalheLocal />} /></Routes>
+    </MemoryRouter>,
+  )
+  await screen.findByRole('alert')
+  clicarEmTentarNovamente()
+  await screen.findByRole('heading', { name: 'Biblioteca Central' })
+  const aviso = screen.getByText('Local atualizado.').closest('p')
+  const resultado = document.getElementById('resultado-detalhe')
+  expect(aviso?.nextElementSibling).toBe(resultado)
+  await waitFor(() => expect(resultado).toHaveFocus())
+  expect(document.title).toBe('Biblioteca Central | Portal Acessível')
+})

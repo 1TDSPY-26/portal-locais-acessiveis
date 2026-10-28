@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { apiRequest as ApiRequest } from './api'
+import { MENSAGEM_SEM_CONEXAO, MENSAGEM_TEMPO_ESGOTADO } from './mensagensFalha'
 
 const API_URL = 'https://api.teste.local'
 
@@ -136,7 +137,7 @@ describe('apiRequest - erros', () => {
     const resultado = await apiRequest('/locais')
 
     expect(resultado).toEqual({
-      error: { message: 'Erro de conexão com a API' },
+      error: { message: MENSAGEM_SEM_CONEXAO },
     })
   })
 
@@ -161,7 +162,7 @@ describe('apiRequest - erros', () => {
     expect(signal?.aborted).toBe(true)
 
     await expect(requisicao).resolves.toEqual({
-      error: { message: 'Tempo limite da requisição excedido' },
+      error: { message: MENSAGEM_TEMPO_ESGOTADO },
     })
   })
 
