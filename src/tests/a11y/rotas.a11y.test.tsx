@@ -73,7 +73,7 @@ describe('Auditoria automática de acessibilidade', () => {
   })
 
   it('a edição de local não tem violações', async () => {
-    const container = await abrirRota('/locais/editar/1', /Editar Local/)
+    const container = await abrirRota('/locais/editar/1', /Editar local/)
     await auditarAcessibilidade(container)
   })
 

@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Local } from '../../types/Local'
 import type { Coordenadas } from '../../services/coordenadasLocais.ts'
 import { listarLocais } from '../../services/locais'
+import { invalidarCacheLocais } from '../../services/cacheLocais'
 import { obterCoordenadasDoLocal } from '../../services/coordenadasLocais.ts'
 import Locais from './Locais'
 
@@ -88,7 +89,7 @@ async function abrirListagem() {
       <Locais />
     </MemoryRouter>,
   )
-  await screen.findByText('4 locais encontrados')
+  await screen.findByText('Mostrando 1–4 de 4 locais')
   return usuario
 }
 
@@ -101,6 +102,7 @@ async function ligarProximidade() {
 }
 
 beforeEach(() => {
+  invalidarCacheLocais()
   pedidos = []
   getCurrentPosition.mockClear()
   Object.defineProperty(navigator, 'geolocation', { value: { getCurrentPosition }, configurable: true })
@@ -141,7 +143,7 @@ describe('Locais: filtro "Até 5 km de mim"', () => {
     await ligarProximidade()
 
     expect(nomesNaTela()).toEqual([LOCAL_PERTO.nome, LOCAL_NO_LIMITE.nome])
-    expect(screen.getByText('2 locais encontrados')).toBeInTheDocument()
+    expect(screen.getByText('Mostrando 1–2 de 2 locais')).toBeInTheDocument()
   })
 
   it('marcar o filtro não pede a localização de novo, e desmarcar volta a lista comum', async () => {
@@ -163,7 +165,9 @@ describe('Locais: filtro "Até 5 km de mim"', () => {
     await usuario.clear(screen.getByLabelText('Buscar por nome'))
     await usuario.type(screen.getByLabelText('Buscar por nome'), 'parque')
     expect(nomesNaTela()).toEqual([])
-    expect(screen.getByText('Nenhum local corresponde à pesquisa e aos filtros selecionados.')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Nenhum local encontrado' })).toBeInTheDocument()
+    expect(screen.getByText(/busca .parque./)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Mostrar todos os locais' })).toBeInTheDocument()
   })
 
   it('"Limpar filtros e busca" limpa busca, categoria e recursos, mas mantém a proximidade', async () => {
@@ -228,4 +232,24 @@ describe('Locais: localização sem resposta pronta', () => {
     responderComErro(1, 3)
     expect(nomesNaTela()).toHaveLength(4)
   })
+})
+it('reinicia a paginação ao aplicar proximidade, sem perder os resultados filtrados', async () => {
+  const locais = Array.from({ length: 27 }, (_, indice) =>
+    criarLocal(indice + 1, `Local Sintético ${String(indice + 1).padStart(2, '0')}`, 'Teste'),
+  )
+  vi.mocked(listarLocais).mockResolvedValue({ data: locais })
+  vi.mocked(obterCoordenadasDoLocal).mockImplementation((local) =>
+    local.id <= 20 ? { latitude: 0.009, longitude: 0 } : { latitude: 1, longitude: 0 },
+  )
+  const usuario = userEvent.setup()
+  render(<MemoryRouter><Locais /></MemoryRouter>)
+  await screen.findByText('Mostrando 1–9 de 27 locais')
+  await usuario.click(screen.getByRole('button', { name: 'Página 3' }))
+  expect(screen.getByText('Mostrando 19–27 de 27 locais')).toBeInTheDocument()
+  await usuario.click(screen.getByRole('button', { name: 'Usar minha localização' }))
+  responderComSucesso(0)
+  await usuario.click(screen.getByRole('checkbox', { name: 'Até 5 km de mim' }))
+  expect(screen.getByText('Mostrando 1–9 de 20 locais')).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Página 1' })).toHaveAttribute('aria-current', 'page')
+  expect(nomesNaTela()).toEqual(locais.slice(0, 9).map((local) => local.nome))
 })
