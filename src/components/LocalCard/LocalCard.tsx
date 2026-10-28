@@ -1,23 +1,47 @@
+
 import { Link } from 'react-router-dom'
 import type { Local } from '../../types/Local'
+import { formatarDistancia } from '../../utils/formatarDistancia'
+
+const PREFIXO_DISTANCIA = 'Distância aproximada: '
 
 type LocalCardProps = {
   local: Local
+  onExcluir?: (local: Local) => void
+  /** Distância em linha reta até o local, em km. Sem valor válido, nada é exibido. */
+  distanciaKm?: number | null
 }
 
-export default function LocalCard({ local }: LocalCardProps) {
+export default function LocalCard({
+  local,
+  onExcluir,
+  distanciaKm,
+}: LocalCardProps) {
+  const textoDistancia = formatarDistancia(distanciaKm)
+
   return (
     <article className="flex min-w-0 flex-col justify-between gap-3 break-words rounded-xl border border-gray-200 p-4 shadow-sm">
       <div>
         <div className="flex items-start justify-between gap-3">
-          <h3 className="text-lg font-semibold text-gray-900">{local.nome}</h3>
+          <h3 className="text-lg font-semibold text-gray-900">
+            {local.nome}
+          </h3>
 
           <span className="shrink-0 rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-800">
             {local.categoria}
           </span>
         </div>
 
-        <p className="mt-1 text-sm text-gray-600">{local.endereco}</p>
+        <p className="mt-1 text-sm text-gray-600">
+          {local.endereco}
+        </p>
+
+        {textoDistancia && (
+          // <p> comum, sem aria-live: evita que o leitor de tela anuncie cada cartão.
+          <p className="mt-1 text-sm text-gray-600">
+            {`${PREFIXO_DISTANCIA}${textoDistancia}`}
+          </p>
+        )}
 
         <ul className="mt-3 flex flex-wrap gap-2">
           {local.tiposAcessibilidade.map((tipo) => (
@@ -31,13 +55,28 @@ export default function LocalCard({ local }: LocalCardProps) {
         </ul>
       </div>
 
-      <Link
-        to={`/locais/${local.id}`}
-        className="inline-flex min-h-11 items-center text-sm font-medium text-blue-700 underline hover:text-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700"
-      >
-        Ver detalhes<span className="sr-only"> de {local.nome}</span>
-      </Link>
+      <div className="flex items-center justify-between gap-4">
+        <Link
+          to={`/locais/${local.id}`}
+          aria-label={`Ver detalhes de ${local.nome}`}
+          className="inline-flex min-h-11 items-center text-sm font-medium text-blue-700 underline hover:text-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700"
+        >
+          Ver detalhes
+          <span className="sr-only"> de {local.nome}</span>
+        </Link>
+
+        {onExcluir && (
+          <button
+            type="button"
+            aria-label={`Excluir ${local.nome}`}
+            onClick={() => onExcluir(local)}
+            className="inline-flex min-h-11 items-center text-sm font-medium text-red-700 underline hover:text-red-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700"
+          >
+            Excluir
+            <span className="sr-only"> {local.nome}</span>
+          </button>
+        )}
+      </div>
     </article>
   )
 }
-

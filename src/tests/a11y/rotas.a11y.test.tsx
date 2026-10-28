@@ -73,7 +73,7 @@ describe('Auditoria automática de acessibilidade', () => {
   })
 
   it('a edição de local não tem violações', async () => {
-    const container = await abrirRota('/locais/editar/1', /Editar Local/)
+    const container = await abrirRota('/locais/editar/1', /Editar local/)
     await auditarAcessibilidade(container)
   })
 
@@ -82,5 +82,8 @@ describe('Auditoria automática de acessibilidade', () => {
     await auditarAcessibilidade(container)
   })
 
-  it.todo('o detalhe não tem violações (#119)')
+  it('o detalhe não tem violações', async () => {
+    const container = await abrirRota('/locais/1', /Biblioteca Central/)
+    await auditarAcessibilidade(container)
+  })
 })

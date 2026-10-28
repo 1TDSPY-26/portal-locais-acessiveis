@@ -1,4 +1,32 @@
-const API_URL = import.meta.env.VITE_API_URL
+import { mensagemPorFalha } from './mensagensFalha'
+import { mensagemPorStatus } from './mensagensErro'
+
+export const API_URL_PADRAO = 'http://localhost:3000'
+
+function avisarFallback() {
+  // O aviso aparece só no npm run dev, nunca no site publicado.
+  if (import.meta.env.DEV) {
+    console.warn(
+      'VITE_API_URL não foi definida. Usando http://localhost:3000. ' +
+        'Crie o arquivo .env.local com VITE_API_URL=<endereço da API>.'
+    )
+  }
+}
+
+export function resolverApiUrl(valor: string | undefined): string {
+  if (valor === undefined || valor.trim() === '') {
+    avisarFallback()
+    return API_URL_PADRAO
+  }
+
+  let url = valor.trim()
+  if (url.endsWith('/')) {
+    url = url.slice(0, -1)
+  }
+  return url
+}
+
+const API_URL = resolverApiUrl(import.meta.env.VITE_API_URL)
 
 export type ApiError = {
   message: string
@@ -33,7 +61,7 @@ export async function apiRequest<T>(
     if (!response.ok) {
       return {
         error: {
-          message: 'Erro na requisição',
+          message: mensagemPorStatus(response.status),
           status: response.status,
         },
       }
@@ -51,17 +79,9 @@ export async function apiRequest<T>(
       data,
     }
   } catch (error) {
-    if (error instanceof Error && error.name === 'AbortError') {
-      return {
-        error: {
-          message: 'Tempo limite da requisição excedido',
-        },
-      }
-    }
-
     return {
       error: {
-        message: 'Erro de conexão com a API',
+        message: mensagemPorFalha(error),
       },
     }
   } finally {

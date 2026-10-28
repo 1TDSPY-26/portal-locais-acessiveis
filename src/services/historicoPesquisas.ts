@@ -10,10 +10,14 @@ export function lerHistorico(): string[] {
     if (!Array.isArray(historicoConvertidoEmJSON)) return [];
 
     const apenasTextos = historicoConvertidoEmJSON.filter((item): item is string => typeof item === 'string');
+    // Se o filtro tirou algum item, a lista salva não era só de textos.
+    if (apenasTextos.length !== historicoConvertidoEmJSON.length) return [];
 
+    // A lista salva começa pela pesquisa mais recente. Percorrendo do fim para o
+    // começo, a mais recente é a última a entrar e fica no início.
     let listaNormalizada: string[] = [];
-    for (const texto of apenasTextos) {
-        listaNormalizada = adicionarPesquisa(listaNormalizada, texto);
+    for (let i = apenasTextos.length - 1; i >= 0; i--) {
+      listaNormalizada = adicionarPesquisa(listaNormalizada, apenasTextos[i]);
     }
 
     return listaNormalizada.slice(0, 5);

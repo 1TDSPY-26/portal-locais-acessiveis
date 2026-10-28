@@ -43,9 +43,9 @@ const LOCAIS: Local[] = [
 ]
 
 const ERRO_SALVAR =
-  'Erro: Não foi possivel salvar o histórico neste navegador. Você pode continuar pesquisando.'
+  'Erro: Não foi possível salvar o histórico neste navegador. Você pode continuar pesquisando.'
 const ERRO_CARREGAR =
-  'Erro: Não foi possivel carregar o histórico neste navegador. Você pode continuar pesquisando.'
+  'Erro: Não foi possível carregar o histórico neste navegador. Você pode continuar pesquisando.'
 const ERRO_LIMPAR =
   'Erro: Não foi possível apagar o histórico neste navegador. Tente novamente.'
 
@@ -156,7 +156,7 @@ describe('Locais com histórico de pesquisas', () => {
 
     await renderizarLocais()
 
-    expect(botoesDoHistorico()).toEqual(['Biblioteca', 'Museu'])
+    expect(botoesDoHistorico()).toEqual(['Museu', 'Biblioteca'])
   })
 
   it('JSON inválido resulta em lista vazia sem quebrar a página', async () => {
@@ -214,6 +214,9 @@ describe('Locais com histórico de pesquisas', () => {
     const campo = await renderizarLocais()
 
     await user.type(campo, 'Museu{Enter}')
+    await user.selectOptions(screen.getByLabelText('Categoria'), 'Cultura')
+    await user.click(screen.getByRole('checkbox', { name: 'Rampa' }))
+    await user.selectOptions(screen.getByLabelText('Ordenar por'), 'nome-desc')
 
     expect(botoesDoHistorico()).toEqual(['Museu'])
 
@@ -227,6 +230,9 @@ describe('Locais com histórico de pesquisas', () => {
     expect(localStorage.getItem(CHAVE_HISTORICO)).toBeNull()
 
     expect(campo).toHaveValue('Museu')
+    expect(screen.getByLabelText('Categoria')).toHaveValue('Cultura')
+    expect(screen.getByRole('checkbox', { name: 'Rampa' })).toBeChecked()
+    expect(screen.getByLabelText('Ordenar por')).toHaveValue('nome-desc')
     expect(campo).toHaveFocus()
 
     expect(

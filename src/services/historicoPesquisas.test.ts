@@ -28,6 +28,16 @@ describe('Serviço de Histórico de Pesquisas', () => {
           expect(lerHistorico()).toEqual(['biblioteca', 'Museu']);
       });
 
+      it('Mantém a ordem salva e fica com as cinco pesquisas mais recentes', () => {
+          localStorage.setItem(CHAVE_HISTORICO, JSON.stringify(['Museu', 'Biblioteca', 'Praça', 'Parque', 'Teatro', 'Cinema', 'Escola']));
+          expect(lerHistorico()).toEqual(['Museu', 'Biblioteca', 'Praça', 'Parque', 'Teatro']);
+      });
+
+      it('Retorna uma lista vazia se algum item salvo não for texto', () => {
+          localStorage.setItem(CHAVE_HISTORICO, JSON.stringify(['biblioteca', 1]));
+          expect(lerHistorico()).toEqual([]);
+      });
+
       it('Lança excessão de erro caso o armazenamento local esteja inacessivel', () => {
           vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
               throw new Error('Acesso negado!');
