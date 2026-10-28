@@ -14,7 +14,7 @@ function compararPorNome(a: Local, b: Local) {
 }
 
 function compararPorNota(a: Local, b: Local) {
-    return b.notaAcessibilidade - a.notaAcessibilidade || compararPorNome(a, b)
+    return (b.notaAcessibilidade ?? 0) - (a.notaAcessibilidade ?? 0) || compararPorNome(a, b)
 }
 
 function compararPorRecursos(a: Local, b: Local) {
