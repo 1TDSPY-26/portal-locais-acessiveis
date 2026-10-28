@@ -11,6 +11,8 @@ import FiltrosLocais from '../../components/FiltrosLocais/FiltrosLocais'
 import { useLocais } from '../../hooks/useLocais'
 import { useFiltrosNaUrl } from '../../hooks/useFiltrosNaUrl'
 import SeletorOrdenacao from '../../components/SeletorOrdenacao/SeletorOrdenacao'
+import AvisoDadosReserva from '../../components/AvisoDadosReserva/AvisoDadosReserva'
+import { estaUsandoServidorReserva } from '../../services/servidorReserva'
 import { ordenarLocais } from '../../utils/ordenarLocais'
 import { useOrdenacaoNaUrl } from '../../hooks/useOrdenacaoNaUrl'
 import Paginacao from '../../components/Paginacao/Paginacao'
@@ -189,11 +191,16 @@ export default function Locais() {
       },
     )
 
+  const mostrarAvisoReserva =
+    estaUsandoServidorReserva() && locais.length > 0
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-16">
       <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
         Locais acessíveis
       </h1>
+
+      {mostrarAvisoReserva && <AvisoDadosReserva />}
 
       {avisoExclusao && (
         <p
