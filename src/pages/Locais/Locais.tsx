@@ -128,6 +128,28 @@ export default function Locais() {
     setProximidadeLigada(false)
   }
 
+  const distanciasPorId: ReadonlyMap<number, number> = useMemo(() => {
+    const distancias = new Map<number, number>()
+
+    if (estado !== 'pronta' || !posicao) {
+      return distancias
+    }
+
+    for (const local of locais) {
+      const coordenadas = obterCoordenadasDoLocal(local)
+      if (!coordenadas) {
+        continue
+      }
+
+      const distancia = calcularDistanciaKm(posicao, coordenadas)
+      if (Number.isFinite(distancia) && distancia >= 0) {
+        distancias.set(local.id, distancia)
+      }
+    }
+
+    return distancias
+  }, [locais, estado, posicao])
+
   const locaisOrdenados = useMemo(
     () => ordenarLocais(locaisVisiveis, ordenacao),
     [locaisVisiveis, ordenacao],
@@ -290,6 +312,7 @@ export default function Locais() {
                     key={local.id}
                     local={local}
                     onExcluir={setLocalParaExcluir}
+                    distanciaKm={distanciasPorId.get(local.id)}
                   />
                 ),
               )}
