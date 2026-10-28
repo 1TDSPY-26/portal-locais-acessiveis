@@ -12,6 +12,7 @@ import { useLocais } from '../../hooks/useLocais'
 import { useFiltrosNaUrl } from '../../hooks/useFiltrosNaUrl'
 import SeletorOrdenacao from '../../components/SeletorOrdenacao/SeletorOrdenacao'
 import { ordenarLocais, type CriterioOrdenacao } from '../../utils/ordenarLocais'
+import { useTituloDocumento } from '../../hooks/useTituloDocumento'
 
 function normalizar(texto: string) {
   return texto
@@ -21,6 +22,7 @@ function normalizar(texto: string) {
 }
 
 export default function Locais() {
+  useTituloDocumento('Locais acessíveis')
   const {
     locais,
     isLoading,
