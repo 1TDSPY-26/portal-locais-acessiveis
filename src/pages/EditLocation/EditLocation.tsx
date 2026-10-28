@@ -4,6 +4,7 @@ import ErrorMessage from '../../components/Error/ErrorMessage'
 import { Loading } from '../../components/Loading/Loading'
 import { RECURSOS_ACESSIBILIDADE } from '../../constants/acessibilidade'
 import type { Local } from '../../types/Local'
+import { useTituloDocumento } from '../../hooks/useTituloDocumento'
 import {
   atualizarLocal as updateLocation,
   obterLocalPorId as getLocationById,
@@ -56,6 +57,7 @@ function removerEspacosDasPontas(dados: NovoLocal): NovoLocal {
 }
 
 export default function EditLocation() {
+  useTituloDocumento('Editar local')
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [dados, setDados] = useState<NovoLocal>(LOCAL_VAZIO)
