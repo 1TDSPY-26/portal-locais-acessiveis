@@ -14,6 +14,7 @@ import SeletorOrdenacao from '../../components/SeletorOrdenacao/SeletorOrdenacao
 import { ordenarLocais, type CriterioOrdenacao } from '../../utils/ordenarLocais'
 import Paginacao from '../../components/Paginacao/Paginacao'
 import { paginar } from '../../utils/paginar'
+import { useTituloDocumento } from '../../hooks/useTituloDocumento'
 
 const ITENS_POR_PAGINA = 9
 
@@ -25,6 +26,7 @@ function normalizar(texto: string) {
 }
 
 export default function Locais() {
+  useTituloDocumento('Locais acessíveis')
   const {
     locais,
     isLoading,
