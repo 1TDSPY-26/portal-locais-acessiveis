@@ -111,7 +111,9 @@ describe('Paginação integrada à listagem', () => {
     expect(screen.queryByRole('navigation', { name: 'Paginação' })).not.toBeInTheDocument()
     await user.type(screen.getByRole('searchbox'), 'ausente')
     expect(screen.getByText('Mostrando 0–0 de 0 locais')).toBeInTheDocument()
-    expect(screen.getByText('Nenhum local corresponde à pesquisa e aos filtros selecionados.')).toBeInTheDocument()
+    expect(screen.getByText('Nenhum local encontrado')).toBeInTheDocument()
+    expect(screen.getByText('Nenhum local corresponde a: busca "ausente". Tente remover algum filtro.')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Mostrar todos os locais' })).toBeInTheDocument()
   })
 
   it('corrige a página após excluir o último card sem perder filtros, ordem ou cache', async () => {
