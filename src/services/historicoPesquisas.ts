@@ -51,3 +51,12 @@ export function salvarHistorico(pesquisas: string[]): boolean {
     return false;
   }
 }
+// removeItem apaga só a chave do histórico; clear() apagaria tudo do site.
+export function limparHistorico(): boolean {
+  try {
+    localStorage.removeItem(CHAVE_HISTORICO)
+    return true
+  } catch {
+    return false
+  }
+}

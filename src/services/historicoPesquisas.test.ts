@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { CHAVE_HISTORICO, lerHistorico, adicionarPesquisa, salvarHistorico } from './historicoPesquisas';
+import { CHAVE_HISTORICO, lerHistorico, adicionarPesquisa, salvarHistorico, limparHistorico } from './historicoPesquisas';
 
 describe('Serviço de Histórico de Pesquisas', () => {
     beforeEach(() => {
@@ -85,6 +85,36 @@ describe('salvarHistorico', () => {
     const gravou = salvarHistorico(['biblioteca']);
     expect(gravou).toBe(false);
     
+    });
+  });
+
+describe('limparHistorico', () => {
+    it('Remove somente a chave do histórico e retorna true', () => {
+      localStorage.setItem(CHAVE_HISTORICO, JSON.stringify(['biblioteca', 'Museu']));
+      localStorage.setItem('outra-chave', 'deve permanecer');
+
+      const apagou = limparHistorico();
+
+      expect(apagou).toBe(true);
+      expect(localStorage.getItem(CHAVE_HISTORICO)).toBeNull();
+      expect(localStorage.getItem('outra-chave')).toBe('deve permanecer');
+    });
+
+    it('Retorna true mesmo quando a chave do histórico não existe', () => {
+      const apagou = limparHistorico();
+
+      expect(apagou).toBe(true);
+      expect(localStorage.getItem(CHAVE_HISTORICO)).toBeNull();
+    });
+
+    it('Retorna false quando não consegue remover o histórico', () => {
+      vi.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => {
+        throw new Error('Acesso negado!');
+      });
+
+      const apagou = limparHistorico();
+
+      expect(apagou).toBe(false);
     });
   });
 });

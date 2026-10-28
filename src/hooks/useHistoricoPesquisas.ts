@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { lerHistorico, adicionarPesquisa, salvarHistorico } from '../services/historicoPesquisas';
+import { lerHistorico, adicionarPesquisa, salvarHistorico, limparHistorico } from '../services/historicoPesquisas';
 
 export const MENSAGEM_ERRO_CARREGAR_HISTORICO = 
   'Não foi possível carregar o histórico neste navegador. Você pode continuar pesquisando.';
@@ -7,9 +7,13 @@ export const MENSAGEM_ERRO_CARREGAR_HISTORICO =
 export const MENSAGEM_ERRO_SALVAR_HISTORICO = 
   'Não foi possível salvar o histórico neste navegador. Você pode continuar pesquisando.';
 
+export const MENSAGEM_ERRO_LIMPAR_HISTORICO =
+  'Não foi possível apagar o histórico neste navegador. Tente novamente.';
+
 export type RetornoHistoricoPesquisas = {
   pesquisas: string[];
   registrar: (texto: string) => void;
+  limpar: () => boolean;
   erroPersistencia: string;
 };
 
@@ -43,10 +47,23 @@ export function useHistoricoPesquisas(): RetornoHistoricoPesquisas {
     }
   };
 
+  const limpar = (): boolean => {
+    const apagou = limparHistorico();
+
+    if (!apagou) {
+      setErroPersistencia(MENSAGEM_ERRO_LIMPAR_HISTORICO);
+      return false;
+    }
+
+    setPesquisas([]);
+    setErroPersistencia('');
+    return true;
+  };
+
   return {
     pesquisas,
     registrar,
+    limpar,
     erroPersistencia,
   };
 }
-

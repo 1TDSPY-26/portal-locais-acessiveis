@@ -37,4 +37,36 @@ describe('HistoricoPesquisas', () => {
     expect(onSelecionarMock).toHaveBeenCalledTimes(1);
     expect(onSelecionarMock).toHaveBeenCalledWith('biblioteca');
   });
+
+  it('Não exibe o botão de limpar quando onLimpar não é informado', () => {
+    render(
+      <HistoricoPesquisas pesquisas={['biblioteca']} onSelecionar={() => {}}/>
+    );
+
+    expect(
+      screen.queryByRole('button', {
+        name: 'Limpar histórico de pesquisas',
+      })
+    ).not.toBeInTheDocument();
+  });
+
+  it('Chama onLimpar ao clicar no botão de limpar histórico', async () => {
+    const onLimparMock = vi.fn();
+
+    render(
+      <HistoricoPesquisas
+        pesquisas={['biblioteca']}
+        onSelecionar={() => {}}
+        onLimpar={onLimparMock}
+      />
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Limpar histórico de pesquisas',
+      })
+    );
+
+    expect(onLimparMock).toHaveBeenCalledTimes(1);
+  });
 });

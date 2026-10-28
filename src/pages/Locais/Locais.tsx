@@ -31,6 +31,7 @@ const TEXTO_BOTAO_LOCALIZACAO = 'Usar minha localização'
 const TEXTO_FILTRO_PROXIMIDADE = 'Até 5 km de mim'
 
 const ITENS_POR_PAGINA = 9
+const MENSAGEM_HISTORICO_APAGADO = 'Sucesso: Histórico de pesquisas apagado.'
 
 function descreverFiltrosAtivos(busca: string, categoria: string, recursos: string[]): string {
   const partes: string[] = []
@@ -126,6 +127,7 @@ export default function Locais() {
 
   const { busca, categoria, recursos, setBusca, setCategoria, setRecursos, limpar: limparFiltros } = useFiltrosNaUrl()
   const historico = useHistoricoPesquisas()
+  const [mensagemHistorico, setMensagemHistorico] = useState('')
 
   function selecionarPesquisa(texto: string) {
     setBusca(texto)
@@ -136,6 +138,16 @@ export default function Locais() {
   const posicaoDoFiltro = proximidadeLigada ? posicao : null
   const chaveFiltros = JSON.stringify([busca, categoria, [...recursos].sort(), posicaoDoFiltro])
   const filtrosAnteriores = useRef(chaveFiltros)
+
+  function limparHistoricoPesquisas() {
+    const apagou = historico.limpar()
+    if (!apagou) {
+      setMensagemHistorico('')
+      return
+    }
+    setMensagemHistorico(MENSAGEM_HISTORICO_APAGADO)
+    document.getElementById('busca')?.focus()
+  }
 
   const categorias = useMemo(
     () =>
@@ -282,7 +294,10 @@ export default function Locais() {
               <HistoricoPesquisas
                 pesquisas={historico.pesquisas}
                 onSelecionar={selecionarPesquisa}
+                onLimpar={limparHistoricoPesquisas}
               />
+
+              <p role="status" aria-live="polite">{mensagemHistorico}</p>
 
               {historico.erroPersistencia && (
                 <p role="alert" className="text-sm font-medium text-red-800">
