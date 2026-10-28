@@ -16,9 +16,6 @@ import { useGeolocalizacao } from '../../hooks/useGeolocalizacao'
 import { obterCoordenadasDoLocal, type Coordenadas } from '../../services/coordenadasLocais'
 import { calcularDistanciaKm } from '../../utils/distancia'
 
-const DISTANCIA_MAXIMA_KM = 5
-const TEXTO_BOTAO_LOCALIZACAO = 'Usar minha localização'
-const TEXTO_FILTRO_PROXIMIDADE = 'Até 5 km de mim'
 import AvisoDadosReserva from '../../components/AvisoDadosReserva/AvisoDadosReserva'
 import { estaUsandoServidorReserva } from '../../services/servidorReserva'
 import { ordenarLocais } from '../../utils/ordenarLocais'
@@ -26,6 +23,10 @@ import { useOrdenacaoNaUrl } from '../../hooks/useOrdenacaoNaUrl'
 import Paginacao from '../../components/Paginacao/Paginacao'
 import { paginar } from '../../utils/paginar'
 import { useTituloDocumento } from '../../hooks/useTituloDocumento'
+
+const DISTANCIA_MAXIMA_KM = 5
+const TEXTO_BOTAO_LOCALIZACAO = 'Usar minha localização'
+const TEXTO_FILTRO_PROXIMIDADE = 'Até 5 km de mim'
 
 const ITENS_POR_PAGINA = 9
 

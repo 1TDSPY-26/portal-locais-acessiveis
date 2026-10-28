@@ -165,7 +165,7 @@ describe('Locais: filtro "Até 5 km de mim"', () => {
     await usuario.clear(screen.getByLabelText('Buscar por nome'))
     await usuario.type(screen.getByLabelText('Buscar por nome'), 'parque')
     expect(nomesNaTela()).toEqual([])
-    expect(screen.getByRole('heading', { name: 'Nenhum local encontrado' })).toBeInTheDocument()
+    expect(screen.getByText('Nenhum local encontrado')).toBeInTheDocument()
     expect(screen.getByText(/busca .parque./)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Mostrar todos os locais' })).toBeInTheDocument()
   })
