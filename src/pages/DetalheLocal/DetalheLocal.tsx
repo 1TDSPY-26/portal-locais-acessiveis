@@ -6,6 +6,7 @@ import LocalDetail from '../../components/LocalDetail/LocalDetail'
 import { useTituloDocumento } from '../../hooks/useTituloDocumento'
 import { obterLocalPorId } from '../../services/locais'
 import type { Local } from '../../types/Local'
+import { acrescentarDica, ehErroRecuperavel } from '../../utils/novaTentativa'
 
 const MENSAGEM_ID_INVALIDO = 'Endereço inválido: o identificador do local precisa ser um número.'
 const MENSAGEM_NAO_ENCONTRADO = 'Local não encontrado.'
@@ -31,6 +32,10 @@ export default function DetalheLocal() {
   const [local, setLocal] = useState<Local | null>(null)
   const [isLoading, setIsLoading] = useState(idValido)
   const [errorMessage, setErrorMessage] = useState(idValido ? '' : MENSAGEM_ID_INVALIDO)
+  const [erroRecuperavel, setErroRecuperavel] = useState(false)
+  const [falhasSeguidas, setFalhasSeguidas] = useState(0)
+  const [tentativa, setTentativa] = useState(0)
+  const resultadoRef = useRef<HTMLDivElement>(null)
   // Guardada em estado para continuar na tela depois que o state da navegação for limpo.
   const [avisoSucesso] = useState(
     () => (location.state as EstadoDaNavegacao | null)?.mensagem ?? '',
@@ -55,12 +60,20 @@ export default function DetalheLocal() {
         if (!active) return
         if (error) {
           setErrorMessage(error.status === 404 ? MENSAGEM_NAO_ENCONTRADO : error.message)
+          setErroRecuperavel(ehErroRecuperavel(error.status))
+          setFalhasSeguidas((falhas) => falhas + 1)
           return
         }
-        if (data) setLocal(data)
+        if (data) {
+          setLocal(data)
+          setFalhasSeguidas(0)
+        }
       })
       .catch(() => {
-        if (active) setErrorMessage('Erro inesperado ao carregar o local.')
+        if (!active) return
+        setErrorMessage('Erro inesperado ao carregar o local.')
+        setErroRecuperavel(true)
+        setFalhasSeguidas((falhas) => falhas + 1)
       })
       .finally(() => {
         if (active) setIsLoading(false)
@@ -69,17 +82,33 @@ export default function DetalheLocal() {
     return () => {
       active = false
     }
-  }, [idLocal, idValido])
+  }, [idLocal, idValido, tentativa])
+
+  function tentarNovamente() {
+    setErrorMessage('')
+    setErroRecuperavel(false)
+    setIsLoading(true)
+    setTentativa((n) => n + 1)
+  }
+
+  // Depois de cada nova tentativa (não no primeiro carregamento), leva o foco para o resultado.
+  useEffect(() => {
+    if (tentativa > 0 && !isLoading) {
+      resultadoRef.current?.focus()
+    }
+  }, [tentativa, isLoading])
 
   // Quando a página termina de carregar, leva o foco para o aviso e limpa o state
   // (para a mensagem não voltar a aparecer com F5).
   useEffect(() => {
     if (!avisoSucesso || isLoading || !local) return
-    avisoRef.current?.focus()
+    if (tentativa === 0) avisoRef.current?.focus()
     navigate(location.pathname, { replace: true })
-  }, [avisoSucesso, isLoading, local, navigate, location.pathname])
+  }, [avisoSucesso, isLoading, local, navigate, location.pathname, tentativa])
 
   if (isLoading) return <Loading message="Carregando informações do local..." />
+
+  const mensagemErro = errorMessage || MENSAGEM_NAO_ENCONTRADO
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
@@ -94,11 +123,21 @@ export default function DetalheLocal() {
         </p>
       )}
 
-      {local ? (
-        <LocalDetail local={local} />
-      ) : (
-        <ErrorMessage message={errorMessage || MENSAGEM_NAO_ENCONTRADO} />
-      )}
+      <div
+        id="resultado-detalhe"
+        ref={resultadoRef}
+        tabIndex={-1}
+        className="focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-blue-700"
+      >
+        {local ? (
+          <LocalDetail local={local} />
+        ) : (
+          <ErrorMessage
+            message={erroRecuperavel ? acrescentarDica(mensagemErro, falhasSeguidas) : mensagemErro}
+            onRetry={erroRecuperavel ? tentarNovamente : undefined}
+          />
+        )}
+      </div>
 
       <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2">
         <Link to="/locais" className={classeLink}>
