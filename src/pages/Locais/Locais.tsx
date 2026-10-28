@@ -11,7 +11,8 @@ import FiltrosLocais from '../../components/FiltrosLocais/FiltrosLocais'
 import { useLocais } from '../../hooks/useLocais'
 import { useFiltrosNaUrl } from '../../hooks/useFiltrosNaUrl'
 import SeletorOrdenacao from '../../components/SeletorOrdenacao/SeletorOrdenacao'
-import { ordenarLocais, type CriterioOrdenacao } from '../../utils/ordenarLocais'
+import { ordenarLocais } from '../../utils/ordenarLocais'
+import { useOrdenacaoNaUrl } from '../../hooks/useOrdenacaoNaUrl'
 import Paginacao from '../../components/Paginacao/Paginacao'
 import { paginar } from '../../utils/paginar'
 import { useTituloDocumento } from '../../hooks/useTituloDocumento'
@@ -46,7 +47,7 @@ export default function Locais() {
     atualizadoEm,
     recarregar: loadLocais,
   } = useLocais()
-  const [ordenacao, setOrdenacao] = useState<CriterioOrdenacao>('nome-asc')
+  const { ordenacao, setOrdenacao } = useOrdenacaoNaUrl()
   const [pagina, setPagina] = useState(1)
   const tituloListaRef = useRef<HTMLHeadingElement>(null)
 
