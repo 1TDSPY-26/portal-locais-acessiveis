@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { atualizarLocal, obterLocalPorId } from '../../services/locais'
@@ -19,6 +19,16 @@ const biblioteca: Local = {
   notaAcessibilidade: 4,
 }
 
+function DetalheFalso() {
+  const location = useLocation()
+  return (
+    <>
+      <h1>Página de detalhe</h1>
+      <p>{location.state?.mensagem}</p>
+    </>
+  )
+}
+
 function abrirEdicao() {
   render(
     <MemoryRouter initialEntries={['/locais/editar/1']}>
@@ -33,7 +43,7 @@ function abrirEdicao() {
         />
         <Route
           path="/locais/:id"
-          element={<h1>Página de detalhe</h1>}
+          element={<DetalheFalso />}
         />
       </Routes>
     </MemoryRouter>,
@@ -92,7 +102,7 @@ describe('EditLocation', () => {
     abrirEdicao()
 
     expect(
-      await screen.findByText('Falha ao carregar'),
+      await screen.findByText(/Falha ao carregar/)
     ).toBeInTheDocument()
   })
 
@@ -122,7 +132,7 @@ describe('EditLocation', () => {
     })
 
     expect(
-      await screen.findByText(/local atualizado com sucesso/i),
+      await screen.findByText('Alterações salvas com sucesso.'),
     ).toBeInTheDocument()
   })
 
@@ -175,7 +185,7 @@ describe('EditLocation', () => {
     )
 
     expect(
-      await screen.findByText('Falha ao salvar'),
+      await screen.findByText(/Falha ao salvar/),
     ).toBeInTheDocument()
 
     expect(input).toHaveValue('Novo Nome')

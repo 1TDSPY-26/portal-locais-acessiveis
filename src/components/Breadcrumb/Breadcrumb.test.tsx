@@ -128,7 +128,7 @@ describe('Breadcrumb acessível', () => {
   it('não mostra caminho na edição com erro', async () => {
     vi.mocked(obterLocalPorId).mockResolvedValue({ error: { message: 'Falha', status: 500 } })
     abrirPagina('/locais/editar/1')
-    expect(await screen.findByText('Falha')).toBeInTheDocument()
+    expect(await screen.findByText(/Falha/)).toBeInTheDocument()
     expect(screen.queryByRole('navigation', { name: 'Caminho de navegação' })).not.toBeInTheDocument()
   })
 })

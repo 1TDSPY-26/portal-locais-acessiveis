@@ -1,16 +1,24 @@
 
 import { Link } from 'react-router-dom'
 import type { Local } from '../../types/Local'
+import { formatarDistancia } from '../../utils/formatarDistancia'
+
+const PREFIXO_DISTANCIA = 'Distância aproximada: '
 
 type LocalCardProps = {
   local: Local
   onExcluir?: (local: Local) => void
+  /** Distância em linha reta até o local, em km. Sem valor válido, nada é exibido. */
+  distanciaKm?: number | null
 }
 
 export default function LocalCard({
   local,
   onExcluir,
+  distanciaKm,
 }: LocalCardProps) {
+  const textoDistancia = formatarDistancia(distanciaKm)
+
   return (
     <article className="flex min-w-0 flex-col justify-between gap-3 break-words rounded-xl border border-gray-200 p-4 shadow-sm">
       <div>
@@ -27,6 +35,13 @@ export default function LocalCard({
         <p className="mt-1 text-sm text-gray-600">
           {local.endereco}
         </p>
+
+        {textoDistancia && (
+          // <p> comum, sem aria-live: evita que o leitor de tela anuncie cada cartão.
+          <p className="mt-1 text-sm text-gray-600">
+            {`${PREFIXO_DISTANCIA}${textoDistancia}`}
+          </p>
+        )}
 
         <ul className="mt-3 flex flex-wrap gap-2">
           {local.tiposAcessibilidade.map((tipo) => (

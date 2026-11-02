@@ -6,6 +6,10 @@ import {
 } from '../services/cacheLocais'
 import { listarLocais } from '../services/locais'
 import type { Local } from '../types/Local'
+import {
+  CONTEXTO_CARREGAR_LISTA,
+  montarMensagemComContexto,
+} from '../utils/mensagemComContexto'
 
 export function useLocais() {
   const cacheInicial = lerCache()
@@ -38,7 +42,12 @@ export function useLocais() {
       const { data, error } = await listarLocais()
 
       if (error) {
-        setErrorMessage(error.message)
+        setErrorMessage(
+          montarMensagemComContexto(
+            CONTEXTO_CARREGAR_LISTA,
+            error.message,
+          ),
+        )
         return
       }
 

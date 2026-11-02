@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useTituloDocumento } from '../../hooks/useTituloDocumento'
 
 // Mesmo padrão de botão da Home, para as chamadas de ação terem o mesmo peso
 // visual em todo o portal.
@@ -6,6 +7,7 @@ const classeBotao =
   'inline-flex min-h-12 items-center justify-center rounded-md bg-blue-700 px-6 py-3 text-base font-semibold text-white hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700'
 
 export default function Sobre() {
+  useTituloDocumento('Sobre o projeto')
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-16">
 

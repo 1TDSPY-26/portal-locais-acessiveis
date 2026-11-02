@@ -1,3 +1,6 @@
+export const MENSAGEM_SEM_RECURSOS =
+  'Os locais carregados não informam recursos de acessibilidade. Use a busca ou a categoria para filtrar.'
+
 type FiltrosLocaisProps = {
   categorias: string[]
   recursosDisponiveis: string[]
@@ -22,6 +25,8 @@ export default function FiltrosLocais({
 }: FiltrosLocaisProps) {
   const filtrosAtivos =
     recursos.length + (categoria ? 1 : 0) + (buscaAtiva ? 1 : 0)
+
+  const semRecursos = recursosDisponiveis.length === 0
 
   function alternarRecurso(recurso: string) {
     if (recursos.includes(recurso)) {
@@ -63,19 +68,23 @@ export default function FiltrosLocais({
           Recursos de acessibilidade
         </legend>
 
-        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-          {recursosDisponiveis.map((recurso) => (
-            <label key={recurso} className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={recursos.includes(recurso)}
-                onChange={() => alternarRecurso(recurso)}
-                className="h-5 w-5 shrink-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700"
-              />
-              {recurso}
-            </label>
-          ))}
-        </div>
+        {semRecursos ? (
+          <p className="text-sm text-gray-700">{MENSAGEM_SEM_RECURSOS}</p>
+        ) : (
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {recursosDisponiveis.map((recurso) => (
+              <label key={recurso} className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={recursos.includes(recurso)}
+                  onChange={() => alternarRecurso(recurso)}
+                  className="h-5 w-5 shrink-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700"
+                />
+                {recurso}
+              </label>
+            ))}
+          </div>
+        )}
       </fieldset>
 
       {filtrosAtivos > 0 && (
