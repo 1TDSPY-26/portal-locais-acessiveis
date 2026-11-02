@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
+import Breadcrumb from '../../components/Breadcrumb/Breadcrumb'
 import ErrorMessage from '../../components/Error/ErrorMessage'
 import { Loading } from '../../components/Loading/Loading'
 import LocalDetail from '../../components/LocalDetail/LocalDetail'
@@ -112,6 +113,16 @@ export default function DetalheLocal() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+      {local && (
+        <Breadcrumb
+          itens={[
+            { rotulo: 'Início', para: '/' },
+            { rotulo: 'Locais', para: '/locais' },
+            { rotulo: local.nome },
+          ]}
+        />
+      )}
+
       {avisoSucesso && local && (
         <p
           ref={avisoRef}

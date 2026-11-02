@@ -19,6 +19,7 @@ import {
   CONTEXTO_SALVAR_LOCAL,
   montarMensagemComContexto,
 } from '../../utils/mensagemComContexto'
+import Breadcrumb from '../../components/Breadcrumb/Breadcrumb'
 
 // Temporário até a #120 exportar NovoLocal: importar o tipo de ../../types/Local.
 type NovoLocal = Omit<Local, 'id'>
@@ -66,6 +67,7 @@ export default function EditLocation() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [dados, setDados] = useState<NovoLocal>(LOCAL_VAZIO)
+  const [nomeOriginal, setNomeOriginal] = useState('')
   const [naoEncontrado, setNaoEncontrado] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
@@ -92,6 +94,7 @@ export default function EditLocation() {
       setIsLoading(true)
       setNaoEncontrado(false)
       setCarregado(false)
+      setNomeOriginal('')
       setErrorMessage('')
       setErros({})
 
@@ -126,6 +129,7 @@ export default function EditLocation() {
         }
 
         setDados(separarDadosEditaveis(data))
+        setNomeOriginal(data.nome)
         setCarregado(true)
       } catch {
         if (ativo) {
@@ -255,6 +259,16 @@ export default function EditLocation() {
 
   return (
     <div className={classeContainer}>
+      {carregado && nomeOriginal !== '' && (
+        <Breadcrumb
+          itens={[
+            { rotulo: 'Início', para: '/' },
+            { rotulo: 'Locais', para: '/locais' },
+            { rotulo: nomeOriginal, para: `/locais/${id}` },
+            { rotulo: 'Editar' },
+          ]}
+        />
+      )}
       <h1 className="text-3xl font-bold tracking-tight">Editar local</h1>
 
       {errorMessage && (
