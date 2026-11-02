@@ -1,5 +1,6 @@
 
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
+import { criarEstadoOrigem } from '../../utils/caminhoDaLista'
 import type { Local } from '../../types/Local'
 import { formatarDistancia } from '../../utils/formatarDistancia'
 
@@ -17,6 +18,7 @@ export default function LocalCard({
   onExcluir,
   distanciaKm,
 }: LocalCardProps) {
+  const location = useLocation()
   const textoDistancia = formatarDistancia(distanciaKm)
 
   return (
@@ -58,6 +60,7 @@ export default function LocalCard({
       <div className="flex items-center justify-between gap-4">
         <Link
           to={`/locais/${local.id}`}
+          state={criarEstadoOrigem(location.pathname, location.search)}
           aria-label={`Ver detalhes de ${local.nome}`}
           className="inline-flex min-h-11 items-center text-sm font-medium text-blue-700 underline hover:text-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700"
         >

@@ -6,6 +6,7 @@ import LocalDetail from '../../components/LocalDetail/LocalDetail'
 import { useTituloDocumento } from '../../hooks/useTituloDocumento'
 import { obterLocalPorId } from '../../services/locais'
 import type { Local } from '../../types/Local'
+import { montarCaminhoDaLista } from '../../utils/caminhoDaLista'
 import { acrescentarDica, ehErroRecuperavel } from '../../utils/novaTentativa'
 
 const MENSAGEM_ID_INVALIDO = 'Endereço inválido: o identificador do local precisa ser um número.'
@@ -26,6 +27,7 @@ export default function DetalheLocal() {
   const { id } = useParams()
   const location = useLocation()
   const navigate = useNavigate()
+  const caminhoDaLista = montarCaminhoDaLista(location.state)
   const idLocal = Number(id)
   const idValido = ehIdValido(idLocal)
 
@@ -140,7 +142,7 @@ export default function DetalheLocal() {
       </div>
 
       <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2">
-        <Link to="/locais" className={classeLink}>
+        <Link to={caminhoDaLista} className={classeLink}>
           Voltar para a lista de locais
         </Link>
 
