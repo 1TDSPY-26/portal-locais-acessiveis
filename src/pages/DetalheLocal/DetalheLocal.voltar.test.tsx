@@ -79,4 +79,11 @@ describe('Voltar do detalhe para a lista', () => {
         expect(await screen.findByText('Local não encontrado.')).toBeInTheDocument()
         expect(await linkVoltar()).toHaveAttribute('href', '/locais?busca=bib')
     })
+
+    it('mantém a origem quando o endereço é inválido', async () => {
+        abrirEm({ pathname: '/locais/abc', state: { origem: '/locais?busca=bib' } })
+
+        expect(await screen.findByText('Endereço inválido: o identificador do local precisa ser um número.')).toBeInTheDocument()
+        expect(await linkVoltar()).toHaveAttribute('href', '/locais?busca=bib')
+    })
 })
